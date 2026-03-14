@@ -376,7 +376,7 @@ extension Path.String.Scope.Array {
     ) throws(Path.String.Error<E>) -> R {
         var buffers: [UnsafeMutablePointer<Path.Char>] = unsafe []
         unsafe buffers.reserveCapacity(strings.count)
-        defer { for buffer in unsafe buffers { unsafe buffer.deallocate() } }
+        defer { for i in 0..<buffers.count { unsafe buffers[i].deallocate() } }
 
         var unusedCount = 0
         for (index, string) in strings.enumerated() {
@@ -394,8 +394,8 @@ extension Path.String.Scope.Array {
         )
         defer { unsafe pointerArray.deallocate() }
 
-        for (index, buffer) in unsafe buffers.enumerated() {
-            unsafe (pointerArray[index] = UnsafePointer(buffer))
+        for i in 0..<buffers.count {
+            unsafe (pointerArray[i] = UnsafePointer(buffers[i]))
         }
         unsafe pointerArray[strings.count] = nil
 
@@ -418,7 +418,7 @@ extension Path.String.Scope.Array {
     ) throws(Path.String.Error<E>) -> R {
         var buffers: [UnsafeMutablePointer<Path.Char>] = unsafe []
         unsafe buffers.reserveCapacity(strings.count)
-        defer { for buffer in unsafe buffers { unsafe buffer.deallocate() } }
+        defer { for i in 0..<buffers.count { unsafe buffers[i].deallocate() } }
 
         var unusedCount = 0
         for (index, string) in strings.enumerated() {
@@ -436,8 +436,8 @@ extension Path.String.Scope.Array {
         )
         defer { unsafe pointerArray.deallocate() }
 
-        for (index, buffer) in unsafe buffers.enumerated() {
-            unsafe (pointerArray[index] = UnsafePointer(buffer))
+        for i in 0..<buffers.count {
+            unsafe (pointerArray[i] = UnsafePointer(buffers[i]))
         }
         unsafe pointerArray[strings.count] = nil
 
@@ -453,7 +453,7 @@ extension Path.String.Scope.Array {
     ) throws(Path.String.Conversion.Error) -> R {
         var buffers: [UnsafeMutablePointer<Path.Char>] = unsafe []
         unsafe buffers.reserveCapacity(strings.count)
-        defer { for buffer in unsafe buffers { unsafe buffer.deallocate() } }
+        defer { for i in 0..<buffers.count { unsafe buffers[i].deallocate() } }
 
         var unusedCount = 0
         for (index, string) in strings.enumerated() {
@@ -466,8 +466,8 @@ extension Path.String.Scope.Array {
         )
         defer { unsafe pointerArray.deallocate() }
 
-        for (index, buffer) in unsafe buffers.enumerated() {
-            unsafe (pointerArray[index] = UnsafePointer(buffer))
+        for i in 0..<buffers.count {
+            unsafe (pointerArray[i] = UnsafePointer(buffers[i]))
         }
         unsafe pointerArray[strings.count] = nil
 
@@ -491,7 +491,7 @@ extension Path.String.Scope.Array {
     ) throws(Path.String.Error<E>) -> R {
         var buffers1: [UnsafeMutablePointer<Path.Char>] = unsafe []
         unsafe buffers1.reserveCapacity(strings1.count)
-        defer { for buffer in unsafe buffers1 { unsafe buffer.deallocate() } }
+        defer { for i in 0..<buffers1.count { unsafe buffers1[i].deallocate() } }
 
         var unusedCount = 0
         for (index, string) in strings1.enumerated() {
@@ -506,7 +506,7 @@ extension Path.String.Scope.Array {
 
         var buffers2: [UnsafeMutablePointer<Path.Char>] = unsafe []
         unsafe buffers2.reserveCapacity(strings2.count)
-        defer { for buffer in unsafe buffers2 { unsafe buffer.deallocate() } }
+        defer { for i in 0..<buffers2.count { unsafe buffers2[i].deallocate() } }
 
         for (index, string) in strings2.enumerated() {
             let buffer: UnsafeMutablePointer<Path.Char>
@@ -528,13 +528,13 @@ extension Path.String.Scope.Array {
         )
         defer { unsafe pointerArray2.deallocate() }
 
-        for (index, buffer) in unsafe buffers1.enumerated() {
-            unsafe (pointerArray1[index] = UnsafePointer(buffer))
+        for i in 0..<buffers1.count {
+            unsafe (pointerArray1[i] = UnsafePointer(buffers1[i]))
         }
         unsafe pointerArray1[strings1.count] = nil
 
-        for (index, buffer) in unsafe buffers2.enumerated() {
-            unsafe (pointerArray2[index] = UnsafePointer(buffer))
+        for i in 0..<buffers2.count {
+            unsafe (pointerArray2[i] = UnsafePointer(buffers2[i]))
         }
         unsafe pointerArray2[strings2.count] = nil
 
@@ -561,7 +561,7 @@ extension Path.String.Scope.Array {
     ) throws(Path.String.Error<E>) -> R {
         var buffers1: [UnsafeMutablePointer<Path.Char>] = unsafe []
         unsafe buffers1.reserveCapacity(strings1.count)
-        defer { for buffer in unsafe buffers1 { unsafe buffer.deallocate() } }
+        defer { for i in 0..<buffers1.count { unsafe buffers1[i].deallocate() } }
 
         var unusedCount = 0
         for (index, string) in strings1.enumerated() {
@@ -576,7 +576,7 @@ extension Path.String.Scope.Array {
 
         var buffers2: [UnsafeMutablePointer<Path.Char>] = unsafe []
         unsafe buffers2.reserveCapacity(strings2.count)
-        defer { for buffer in unsafe buffers2 { unsafe buffer.deallocate() } }
+        defer { for i in 0..<buffers2.count { unsafe buffers2[i].deallocate() } }
 
         for (index, string) in strings2.enumerated() {
             let buffer: UnsafeMutablePointer<Path.Char>
@@ -598,13 +598,13 @@ extension Path.String.Scope.Array {
         )
         defer { unsafe pointerArray2.deallocate() }
 
-        for (index, buffer) in unsafe buffers1.enumerated() {
-            unsafe (pointerArray1[index] = UnsafePointer(buffer))
+        for i in 0..<buffers1.count {
+            unsafe (pointerArray1[i] = UnsafePointer(buffers1[i]))
         }
         unsafe pointerArray1[strings1.count] = nil
 
-        for (index, buffer) in unsafe buffers2.enumerated() {
-            unsafe (pointerArray2[index] = UnsafePointer(buffer))
+        for i in 0..<buffers2.count {
+            unsafe (pointerArray2[i] = UnsafePointer(buffers2[i]))
         }
         unsafe pointerArray2[strings2.count] = nil
 
@@ -621,7 +621,7 @@ extension Path.String.Scope.Array {
     ) throws(Path.String.Conversion.Error) -> R {
         var buffers1: [UnsafeMutablePointer<Path.Char>] = unsafe []
         unsafe buffers1.reserveCapacity(strings1.count)
-        defer { for buffer in unsafe buffers1 { unsafe buffer.deallocate() } }
+        defer { for i in 0..<buffers1.count { unsafe buffers1[i].deallocate() } }
 
         var unusedCount = 0
         for (index, string) in strings1.enumerated() {
@@ -631,7 +631,7 @@ extension Path.String.Scope.Array {
 
         var buffers2: [UnsafeMutablePointer<Path.Char>] = unsafe []
         unsafe buffers2.reserveCapacity(strings2.count)
-        defer { for buffer in unsafe buffers2 { unsafe buffer.deallocate() } }
+        defer { for i in 0..<buffers2.count { unsafe buffers2[i].deallocate() } }
 
         for (index, string) in strings2.enumerated() {
             let buffer = try unsafe _allocateBuffer(string, index: strings1.count + index, count: &unusedCount)
@@ -648,13 +648,13 @@ extension Path.String.Scope.Array {
         )
         defer { unsafe pointerArray2.deallocate() }
 
-        for (index, buffer) in unsafe buffers1.enumerated() {
-            unsafe (pointerArray1[index] = UnsafePointer(buffer))
+        for i in 0..<buffers1.count {
+            unsafe (pointerArray1[i] = UnsafePointer(buffers1[i]))
         }
         unsafe pointerArray1[strings1.count] = nil
 
-        for (index, buffer) in unsafe buffers2.enumerated() {
-            unsafe (pointerArray2[index] = UnsafePointer(buffer))
+        for i in 0..<buffers2.count {
+            unsafe (pointerArray2[i] = UnsafePointer(buffers2[i]))
         }
         unsafe pointerArray2[strings2.count] = nil
 
