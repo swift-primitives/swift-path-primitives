@@ -149,10 +149,9 @@ extension Path.String.Scope {
             throw .conversion(error)
         }
         let path = unsafe Path(adopting: buffer, count: count)
+        let view = path.view
         do {
-            return try path.withView { view throws(E) in
-                try body(view)
-            }
+            return try body(view)
         } catch {
             throw .body(error)
         }
@@ -175,9 +174,7 @@ extension Path.String.Scope {
             throw .conversion(error)
         }
         let path = unsafe Path(adopting: buffer, count: count)
-        return try path.withView { view throws(Path.String.Error<NestedBody>) in
-            try body(view)
-        }
+        return try body(path.view)
     }
 
     /// Executes a closure with a scoped path view (non-throwing body).
@@ -189,9 +186,7 @@ extension Path.String.Scope {
         var count = 0
         let buffer = try unsafe _allocateBuffer(string, index: 0, count: &count)
         let path = unsafe Path(adopting: buffer, count: count)
-        return path.withView { view in
-            body(view)
-        }
+        return body(path.view)
     }
 }
 
@@ -221,12 +216,10 @@ extension Path.String.Scope {
             throw .conversion(error)
         }
         let path2 = unsafe Path(adopting: buffer2, count: count2)
+        let view1 = path1.view
+        let view2 = path2.view
         do {
-            return try path1.withView { view1 throws(E) in
-                try path2.withView { view2 throws(E) in
-                    try body(view1, view2)
-                }
-            }
+            return try body(view1, view2)
         } catch {
             throw .body(error)
         }

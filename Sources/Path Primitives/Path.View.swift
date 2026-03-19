@@ -34,8 +34,7 @@ extension Path {
     @safe
     public struct View: ~Copyable, ~Escapable {
         /// The underlying pointer to the null-terminated sequence.
-        @usableFromInline
-        internal let pointer: UnsafePointer<Char>
+        public let pointer: UnsafePointer<Char>
 
         /// The length in code units, excluding the null terminator.
         public let count: Int
@@ -104,21 +103,18 @@ extension Path.View {
     }
 }
 
-// MARK: - Scoped View Access
+// MARK: - View Property
 
 extension Path {
-    /// Executes a closure with a borrowed view of this path.
+    /// Returns a view of this path.
     ///
-    /// The view's lifetime is scoped to the closure.
+    /// The lifetime of the returned `View` is tied to `self`.
     @inlinable
-    public borrowing func withView<R: ~Copyable, E: Swift.Error>(
-        _ body: (borrowing View) throws(E) -> R
-    ) throws(E) -> R {
-        let view = unsafe _overrideLifetime(
-            unsafe View(_storage.unsafeBaseAddress, count: _storage.count),
-            borrowing: self
-        )
-        return try body(view)
+    public var view: View {
+        @_lifetime(borrow self) borrowing get {
+            let view = unsafe View(_storage.unsafeBaseAddress, count: _storage.count)
+            return unsafe _overrideLifetime(view, borrowing: self)
+        }
     }
 }
 

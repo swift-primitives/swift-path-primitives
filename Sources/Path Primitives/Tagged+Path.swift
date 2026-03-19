@@ -64,6 +64,15 @@ extension Tagged where RawValue == Path, Tag: ~Copyable {
     @inlinable
     public var count: Int { rawValue.count }
 
+    /// Returns a view of this path.
+    @inlinable
+    public var view: Path.View {
+        @_lifetime(borrow self) borrowing get {
+            let v = rawValue.view
+            return unsafe _overrideLifetime(v, borrowing: self)
+        }
+    }
+
     /// Returns a `Span` view of the path content, excluding the null terminator.
     ///
     /// Two-level `@_lifetime` chain:
@@ -78,26 +87,6 @@ extension Tagged where RawValue == Path, Tag: ~Copyable {
     }
 }
 
-// MARK: - Scoped Access
-
-extension Tagged where RawValue == Path, Tag: ~Copyable {
-    /// Executes a closure with the underlying C string pointer.
-    @inlinable
-    @unsafe
-    public borrowing func withUnsafeCString<R: ~Copyable, E: Swift.Error>(
-        _ body: (UnsafePointer<Path.Char>) throws(E) -> R
-    ) throws(E) -> R {
-        try unsafe rawValue.withUnsafeCString(body)
-    }
-
-    /// Executes a closure with a borrowed view of this path.
-    @inlinable
-    public borrowing func withView<R: ~Copyable, E: Swift.Error>(
-        _ body: (borrowing Path.View) throws(E) -> R
-    ) throws(E) -> R {
-        try rawValue.withView(body)
-    }
-}
 
 // MARK: - Ownership Transfer
 
