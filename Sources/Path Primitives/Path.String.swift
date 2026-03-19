@@ -238,11 +238,7 @@ extension Path.String.Scope {
         let path1 = unsafe Path(adopting: buffer1, count: count1)
         let buffer2 = try unsafe _allocateBuffer(string2, index: 1, count: &count2)
         let path2 = unsafe Path(adopting: buffer2, count: count2)
-        return path1.withView { view1 in
-            path2.withView { view2 in
-                body(view1, view2)
-            }
-        }
+        return body(path1.view, path2.view)
     }
 }
 
@@ -281,14 +277,11 @@ extension Path.String.Scope {
             throw .conversion(error)
         }
         let path3 = unsafe Path(adopting: buffer3, count: count3)
+        let view1 = path1.view
+        let view2 = path2.view
+        let view3 = path3.view
         do {
-            return try path1.withView { view1 throws(E) in
-                try path2.withView { view2 throws(E) in
-                    try path3.withView { view3 throws(E) in
-                        try body(view1, view2, view3)
-                    }
-                }
-            }
+            return try body(view1, view2, view3)
         } catch {
             throw .body(error)
         }
@@ -311,13 +304,7 @@ extension Path.String.Scope {
         let path2 = unsafe Path(adopting: buffer2, count: count2)
         let buffer3 = try unsafe _allocateBuffer(string3, index: 2, count: &count3)
         let path3 = unsafe Path(adopting: buffer3, count: count3)
-        return path1.withView { view1 in
-            path2.withView { view2 in
-                path3.withView { view3 in
-                    body(view1, view2, view3)
-                }
-            }
-        }
+        return body(path1.view, path2.view, path3.view)
     }
 }
 

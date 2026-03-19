@@ -108,21 +108,6 @@ extension Path {
     }
 }
 
-// MARK: - Scoped Pointer Access
-
-extension Path {
-    /// Executes a closure with the underlying C string pointer.
-    ///
-    /// The closure-based API ensures the pointer cannot escape beyond the call site.
-    @inlinable
-    @unsafe
-    public borrowing func withUnsafeCString<R: ~Copyable, E: Swift.Error>(
-        _ body: (UnsafePointer<Char>) throws(E) -> R
-    ) throws(E) -> R {
-        try unsafe body(_storage.unsafeBaseAddress)
-    }
-}
-
 // MARK: - Ownership Transfer
 
 extension Path {
