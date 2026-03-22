@@ -11,7 +11,7 @@
 
 #if PATH_PRIMITIVES_AVAILABLE && (os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS) || os(Linux) || os(Android) || os(OpenBSD) || os(Windows))
 
-public import String_Primitives
+internal import String_Primitives
 public import Memory_Primitives_Core
 public import Identity_Primitives
 
