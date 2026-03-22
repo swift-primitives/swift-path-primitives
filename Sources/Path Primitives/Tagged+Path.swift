@@ -47,7 +47,7 @@ extension Tagged where RawValue == Path, Tag: ~Copyable {
     /// Takes ownership of `pointer`. The caller must not deallocate it.
     @inlinable
     public init(adopting pointer: UnsafeMutablePointer<Path.Char>, count: Int) {
-        self.init(__unchecked: (), Path(adopting: pointer, count: count))
+        unsafe self.init(__unchecked: (), Path(adopting: pointer, count: count))
     }
 
     /// Creates a tagged path by copying from a string view.
