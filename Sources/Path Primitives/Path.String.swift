@@ -369,7 +369,7 @@ extension Path.String.Scope.Array {
             unsafe buffers.append(buffer)
         }
 
-        let pointerArray = unsafe UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
+        let pointerArray = UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
             capacity: strings.count + 1
         )
         defer { unsafe pointerArray.deallocate() }
@@ -411,7 +411,7 @@ extension Path.String.Scope.Array {
             unsafe buffers.append(buffer)
         }
 
-        let pointerArray = unsafe UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
+        let pointerArray = UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
             capacity: strings.count + 1
         )
         defer { unsafe pointerArray.deallocate() }
@@ -441,7 +441,7 @@ extension Path.String.Scope.Array {
             unsafe buffers.append(buffer)
         }
 
-        let pointerArray = unsafe UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
+        let pointerArray = UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
             capacity: strings.count + 1
         )
         defer { unsafe pointerArray.deallocate() }
@@ -498,12 +498,12 @@ extension Path.String.Scope.Array {
             unsafe buffers2.append(buffer)
         }
 
-        let pointerArray1 = unsafe UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
+        let pointerArray1 = UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
             capacity: strings1.count + 1
         )
         defer { unsafe pointerArray1.deallocate() }
 
-        let pointerArray2 = unsafe UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
+        let pointerArray2 = UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
             capacity: strings2.count + 1
         )
         defer { unsafe pointerArray2.deallocate() }
@@ -568,12 +568,12 @@ extension Path.String.Scope.Array {
             unsafe buffers2.append(buffer)
         }
 
-        let pointerArray1 = unsafe UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
+        let pointerArray1 = UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
             capacity: strings1.count + 1
         )
         defer { unsafe pointerArray1.deallocate() }
 
-        let pointerArray2 = unsafe UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
+        let pointerArray2 = UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
             capacity: strings2.count + 1
         )
         defer { unsafe pointerArray2.deallocate() }
@@ -618,12 +618,12 @@ extension Path.String.Scope.Array {
             unsafe buffers2.append(buffer)
         }
 
-        let pointerArray1 = unsafe UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
+        let pointerArray1 = UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
             capacity: strings1.count + 1
         )
         defer { unsafe pointerArray1.deallocate() }
 
-        let pointerArray2 = unsafe UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
+        let pointerArray2 = UnsafeMutablePointer<UnsafePointer<Path.Char>?>.allocate(
             capacity: strings2.count + 1
         )
         defer { unsafe pointerArray2.deallocate() }
@@ -672,7 +672,7 @@ internal func _allocateBuffer<S: StringProtocol>(
         }
         count = units.count
         let bufferCapacity = count + 1
-        let buffer = unsafe UnsafeMutablePointer<Path.Char>.allocate(capacity: bufferCapacity)
+        let buffer = UnsafeMutablePointer<Path.Char>.allocate(capacity: bufferCapacity)
         var i = 0
         for unit in units {
             unsafe buffer[i] = unit
@@ -687,7 +687,7 @@ internal func _allocateBuffer<S: StringProtocol>(
         }
         count = bytes.count
         let bufferCapacity = count + 1
-        let buffer = unsafe UnsafeMutablePointer<Path.Char>.allocate(capacity: bufferCapacity)
+        let buffer = UnsafeMutablePointer<Path.Char>.allocate(capacity: bufferCapacity)
         var i = 0
         for byte in bytes {
             unsafe buffer[i] = byte
