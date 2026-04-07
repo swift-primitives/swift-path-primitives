@@ -85,6 +85,26 @@ extension Path {
         (unsafe buffer)[length] = String_Primitives.String.terminator
         unsafe self._storage = Memory.Contiguous(adopting: buffer, count: length)
     }
+
+    /// Creates an owned path by copying from a span of path bytes.
+    ///
+    /// Allocates new storage, copies the span's content, and appends a
+    /// null terminator. The span is typically obtained from
+    /// ``Path/Protocol/parent`` or ``Path/Protocol/component`` —
+    /// sub-views of an existing path that need to become owned for
+    /// syscall use.
+    ///
+    /// - Parameter span: The path bytes to copy.
+    @inlinable
+    public init(_ span: Span<Char>) {
+        let length = span.count
+        let buffer = UnsafeMutablePointer<Char>.allocate(capacity: length + 1)
+        for i in 0..<length {
+            (unsafe buffer)[i] = span[i]
+        }
+        (unsafe buffer)[length] = String_Primitives.String.terminator
+        unsafe self._storage = Memory.Contiguous(adopting: buffer, count: length)
+    }
 }
 
 // MARK: - Properties
