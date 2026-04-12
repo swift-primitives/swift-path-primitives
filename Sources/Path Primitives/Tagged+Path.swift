@@ -55,6 +55,17 @@ extension Tagged where RawValue == Path, Tag: ~Copyable {
     public init(copying view: borrowing String_Primitives.String.View) {
         self.init(__unchecked: (), Path(copying: view))
     }
+
+    /// Creates a tagged path by copying from a span of path bytes.
+    ///
+    /// Allocates new storage, copies the span's content, and appends a
+    /// null terminator. The span is typically obtained from
+    /// ``Path/View/span`` or ``Path/Protocol/parent`` — sub-views
+    /// of an existing path that need to become owned for syscall use.
+    @inlinable
+    public init(_ span: Span<Path.Char>) {
+        self.init(__unchecked: (), Path(span))
+    }
 }
 
 // MARK: - Properties
