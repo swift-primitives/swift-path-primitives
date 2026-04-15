@@ -28,13 +28,21 @@ public import Memory_Primitives_Core
 /// - On POSIX: Uses narrow strings (`UInt8`/UTF-8)
 /// - On Windows: Uses wide strings (`UInt16`/UTF-16)
 ///
-/// ## Sendability
+/// ## Safety Invariant
 ///
-/// This type is `@unchecked Sendable` because:
-/// - The buffer is uniquely owned by this value (`~Copyable` prevents aliasing)
-/// - The buffer is immutable after initialization
+/// `Path` is `~Copyable` and owns an immutable `Memory.Contiguous` buffer.
+/// The buffer is uniquely owned and immutable after initialization.
+/// Cross-thread transfer via move relinquishes the sender's access.
+///
+/// ## Intended Use
+///
+/// - Moving a file path across isolation boundaries.
+///
+/// ## Non-Goals
+///
+/// - Not shareable; single-owner semantics.
 @safe
-public struct Path: ~Copyable, @unchecked Sendable {
+public struct Path: ~Copyable, @unsafe @unchecked Sendable {
     /// Internal storage for the null-terminated contiguous memory region.
     @usableFromInline
     internal let _storage: Memory_Primitives_Core.Memory.Contiguous<String_Primitives.String.Char>
