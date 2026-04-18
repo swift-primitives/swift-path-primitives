@@ -126,9 +126,14 @@ extension Path {
 
     /// Returns a `Span` view of the path content, excluding the null terminator.
     ///
+    /// Matches the SE-0456 convention for "semantic content" — the meaningful
+    /// bytes that are not storage framing. For the raw-storage view including
+    /// the NUL terminator (used by `char*`-style syscall hand-off), see the
+    /// L3 `Paths.Path.bytes` property.
+    ///
     /// O(1) complexity. The span's lifetime is tied to this path.
     @inlinable
-    public var bytes: Span<Char> {
+    public var content: Span<Char> {
         @_lifetime(borrow self) borrowing get {
             let s = _storage.span
             return unsafe _overrideLifetime(s, borrowing: self)

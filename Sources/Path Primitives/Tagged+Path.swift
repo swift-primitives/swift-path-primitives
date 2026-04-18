@@ -87,12 +87,12 @@ extension Tagged where RawValue == Path, Tag: ~Copyable {
     /// Returns a `Span` view of the path content, excluding the null terminator.
     ///
     /// Two-level `@_lifetime` chain:
-    /// 1. `rawValue.bytes` borrows from `rawValue` (stored property)
+    /// 1. `rawValue.content` borrows from `rawValue` (stored property)
     /// 2. `_overrideLifetime` re-parents the Span's lifetime to `self`
     @inlinable
-    public var bytes: Span<Path.Char> {
+    public var content: Span<Path.Char> {
         @_lifetime(borrow self) borrowing get {
-            let s = rawValue.bytes
+            let s = rawValue.content
             return unsafe _overrideLifetime(s, borrowing: self)
         }
     }
