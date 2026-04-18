@@ -101,17 +101,4 @@ extension Path.Decomposition where Self: ~Copyable, Self: ~Escapable {
     }
 }
 
-// MARK: - Deprecated: Path.Protocol
-
-extension Path {
-    /// Deprecated alias for `Path.Decomposition`.
-    ///
-    /// Renamed in Wave 2 of the correction cycle: Apple's own swift-system
-    /// uses "decomposition" for the component-extraction API family; this
-    /// alias exists only to keep the in-tree L2 POSIX conformance compiling
-    /// across the rename PR boundary. Removed in Wave 2 PR 5c.
-    @available(*, deprecated, renamed: "Path.Decomposition")
-    public typealias `Protocol` = Decomposition
-}
-
 #endif
