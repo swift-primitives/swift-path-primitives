@@ -11,15 +11,19 @@
 
 #if PATH_PRIMITIVES_AVAILABLE && (os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS) || os(Linux) || os(Android) || os(OpenBSD) || os(Windows))
 
-// MARK: - Path.Protocol
+// MARK: - Path.Decomposition
 
 extension Path {
-    /// The decomposition and construction API for path views.
+    /// The decomposition API for path views — zero-allocation sub-views over
+    /// the path's bytes.
     ///
     /// Platform packages conform `Path.View` to this protocol with
     /// platform-specific separator logic (e.g., `/` for POSIX; `/` and
     /// `\` for Windows). The protocol extension provides instance-level
     /// defaults for consumer convenience.
+    ///
+    /// For owning-type appending (producing a new owned `Path` from two views),
+    /// see `Path.Modification`.
     ///
     /// ## Design
     ///
@@ -28,9 +32,8 @@ extension Path {
     /// provide the single-word instance API per [API-NAME-002]:
     ///
     /// ```swift
-    /// path.view.parent           // Span<Char>?  — zero-alloc, NOT null-terminated
-    /// path.view.component        // Span<Char>   — zero-alloc, IS null-terminated
-    /// path.view.appending(other) // Path         — one allocation
+    /// path.view.parent     // Span<Char>?  — zero-alloc, NOT null-terminated
+    /// path.view.component  // Span<Char>   — zero-alloc, IS null-terminated
     /// ```
     ///
     /// Binary decomposition: `parent` + `component` = path.
@@ -47,7 +50,7 @@ extension Path {
     /// - `component` returns `Span<Char>` because the suffix from the
     ///   last separator to the end IS null-terminated — it shares the
     ///   original path's terminator.
-    public protocol `Protocol`: ~Copyable, ~Escapable {
+    public protocol Decomposition: ~Copyable, ~Escapable {
         /// The path character type.
         ///
         /// - POSIX: `UInt8` (UTF-8 code units)
@@ -73,18 +76,12 @@ extension Path {
         /// path's terminator byte.
         @_lifetime(copy view)
         static func component(of view: borrowing Self) -> Span<Char>
-
-        /// Creates a new owned path: `view` + separator + `other` + NUL.
-        ///
-        /// One allocation. If `view` already ends with a separator, no
-        /// additional separator is inserted.
-        static func appending(_ view: borrowing Self, _ other: borrowing Self) -> Path
     }
 }
 
-// MARK: - Instance API (Protocol Extension Defaults)
+// MARK: - Instance API (Decomposition Defaults)
 
-extension Path.`Protocol` where Self: ~Copyable, Self: ~Escapable {
+extension Path.Decomposition where Self: ~Copyable, Self: ~Escapable {
     /// The parent directory bytes. `nil` for roots and bare filenames.
     ///
     /// Zero-allocation sub-view. NOT null-terminated.
@@ -102,14 +99,19 @@ extension Path.`Protocol` where Self: ~Copyable, Self: ~Escapable {
         @_lifetime(copy self)
         borrowing get { Self.component(of: self) }
     }
+}
 
-    /// Creates a new owned path by joining with `other`.
+// MARK: - Deprecated: Path.Protocol
+
+extension Path {
+    /// Deprecated alias for `Path.Decomposition`.
     ///
-    /// One allocation. Handles trailing separator deduplication.
-    @inlinable
-    public borrowing func appending(_ other: borrowing Self) -> Path {
-        Self.appending(self, other)
-    }
+    /// Renamed in Wave 2 of the correction cycle: Apple's own swift-system
+    /// uses "decomposition" for the component-extraction API family; this
+    /// alias exists only to keep the in-tree L2 POSIX conformance compiling
+    /// across the rename PR boundary. Removed in Wave 2 PR 5c.
+    @available(*, deprecated, renamed: "Path.Decomposition")
+    public typealias `Protocol` = Decomposition
 }
 
 #endif
