@@ -13,16 +13,16 @@
 
 internal import String_Primitives
 public import Memory_Primitives_Core
-public import Identity_Primitives
+public import Ownership_Primitives
 
-// MARK: - Viewable Conformance
+// MARK: - Ownership.Borrow.`Protocol` Conformance
 
-extension Path: Viewable {}
+extension Path: Ownership.Borrow.`Protocol` {}
 
-// MARK: - View
+// MARK: - Borrowed
 
 extension Path {
-    /// Non-escapable view of a null-terminated path.
+    /// Non-escapable borrowed view of a null-terminated path.
     ///
     /// Does not own storage. Valid only for the duration of the borrowing scope.
     /// The referenced memory must remain valid and unmodified while borrowed.
@@ -32,16 +32,16 @@ extension Path {
     ///
     /// Invariant: Points to a null-terminated sequence.
     @safe
-    public struct View: ~Copyable, ~Escapable {
+    public struct Borrowed: ~Copyable, ~Escapable {
         /// The underlying pointer to the null-terminated sequence.
         public let pointer: UnsafePointer<Char>
 
         /// The length in code units, excluding the null terminator.
         public let count: Int
 
-        /// Creates a view from a pointer and count.
+        /// Creates a borrowed view from a pointer and count.
         ///
-        /// The lifetime of this `View` value is tied to the lifetime of `pointer`.
+        /// The lifetime of this `Borrowed` value is tied to the lifetime of `pointer`.
         ///
         /// - Precondition: `pointer` must point to a null-terminated sequence.
         @inlinable
@@ -59,7 +59,7 @@ extension Path {
 // MARK: - Debug Validation
 
 #if DEBUG
-extension Path.View {
+extension Path.Borrowed {
     /// Maximum bytes to scan when validating termination in debug builds.
     @usableFromInline
     internal static let maxDebugScanLength = 16 * 1024 * 1024 // 16 MiB
@@ -76,14 +76,14 @@ extension Path.View {
             unsafe (current = current.successor())
             scanned += 1
         }
-        assertionFailure("Path.View: pointer does not appear to be null-terminated within \(maxDebugScanLength) code units")
+        assertionFailure("Path.Borrowed: pointer does not appear to be null-terminated within \(maxDebugScanLength) code units")
     }
 }
 #endif
 
 // MARK: - Access
 
-extension Path.View {
+extension Path.Borrowed {
     /// Executes a closure with the underlying pointer.
     @unsafe
     @inlinable
@@ -103,16 +103,16 @@ extension Path.View {
     }
 }
 
-// MARK: - View Property
+// MARK: - Borrowed Property
 
 extension Path {
-    /// Returns a view of this path.
+    /// Returns a borrowed view of this path.
     ///
-    /// The lifetime of the returned `View` is tied to `self`.
+    /// The lifetime of the returned `Borrowed` is tied to `self`.
     @inlinable
-    public var view: View {
+    public var view: Borrowed {
         @_lifetime(borrow self) borrowing get {
-            let view = unsafe View(_storage.unsafeBaseAddress, count: _storage.count)
+            let view = unsafe Borrowed(_storage.unsafeBaseAddress, count: _storage.count)
             return unsafe _overrideLifetime(view, borrowing: self)
         }
     }

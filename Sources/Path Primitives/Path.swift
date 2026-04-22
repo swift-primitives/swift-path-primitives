@@ -80,13 +80,13 @@ extension Path {
         unsafe self._storage = Memory_Primitives_Core.Memory.Contiguous(adopting: pointer, count: count)
     }
 
-    /// Creates an owned path by copying from a string view.
+    /// Creates an owned path by copying from a borrowed string view.
     ///
     /// Allocates new storage and copies the content.
     ///
-    /// - Parameter view: A view into a null-terminated string to copy from.
+    /// - Parameter view: A borrowed view into a null-terminated string to copy from.
     @inlinable
-    public init(copying view: borrowing String_Primitives.String.View) {
+    public init(copying view: borrowing String_Primitives.String.Borrowed) {
         let length = view.length
         let buffer = UnsafeMutablePointer<Char>.allocate(capacity: length + 1)
         unsafe buffer.initialize(from: view.pointer, count: length)

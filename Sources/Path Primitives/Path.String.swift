@@ -139,7 +139,7 @@ extension Path.String.Scope {
     @inlinable
     public func callAsFunction<S: StringProtocol, E: Swift.Error, R: ~Copyable>(
         _ string: S,
-        _ body: (borrowing Path.View) throws(E) -> R
+        _ body: (borrowing Path.Borrowed) throws(E) -> R
     ) throws(Path.String.Error<E>) -> R {
         var count = 0
         let buffer: UnsafeMutablePointer<Path.Char>
@@ -164,7 +164,7 @@ extension Path.String.Scope {
     @inlinable
     public func callAsFunction<S: StringProtocol, NestedBody: Swift.Error, R: ~Copyable>(
         _ string: S,
-        _ body: (borrowing Path.View) throws(Path.String.Error<NestedBody>) -> R
+        _ body: (borrowing Path.Borrowed) throws(Path.String.Error<NestedBody>) -> R
     ) throws(Path.String.Error<NestedBody>) -> R {
         var count = 0
         let buffer: UnsafeMutablePointer<Path.Char>
@@ -181,7 +181,7 @@ extension Path.String.Scope {
     @inlinable
     public func callAsFunction<S: StringProtocol, R: ~Copyable>(
         _ string: S,
-        _ body: (borrowing Path.View) -> R
+        _ body: (borrowing Path.Borrowed) -> R
     ) throws(Path.String.Conversion.Error) -> R {
         var count = 0
         let buffer = try unsafe _allocateBuffer(string, index: 0, count: &count)
@@ -198,7 +198,7 @@ extension Path.String.Scope {
     public func callAsFunction<S1: StringProtocol, S2: StringProtocol, E: Swift.Error, R: ~Copyable>(
         _ string1: S1,
         _ string2: S2,
-        _ body: (borrowing Path.View, borrowing Path.View) throws(E) -> R
+        _ body: (borrowing Path.Borrowed, borrowing Path.Borrowed) throws(E) -> R
     ) throws(Path.String.Error<E>) -> R {
         var count1 = 0
         var count2 = 0
@@ -230,7 +230,7 @@ extension Path.String.Scope {
     public func callAsFunction<S1: StringProtocol, S2: StringProtocol, R: ~Copyable>(
         _ string1: S1,
         _ string2: S2,
-        _ body: (borrowing Path.View, borrowing Path.View) -> R
+        _ body: (borrowing Path.Borrowed, borrowing Path.Borrowed) -> R
     ) throws(Path.String.Conversion.Error) -> R {
         var count1 = 0
         var count2 = 0
@@ -251,7 +251,7 @@ extension Path.String.Scope {
         _ string1: S1,
         _ string2: S2,
         _ string3: S3,
-        _ body: (borrowing Path.View, borrowing Path.View, borrowing Path.View) throws(E) -> R
+        _ body: (borrowing Path.Borrowed, borrowing Path.Borrowed, borrowing Path.Borrowed) throws(E) -> R
     ) throws(Path.String.Error<E>) -> R {
         var count1 = 0
         var count2 = 0
@@ -293,7 +293,7 @@ extension Path.String.Scope {
         _ string1: S1,
         _ string2: S2,
         _ string3: S3,
-        _ body: (borrowing Path.View, borrowing Path.View, borrowing Path.View) -> R
+        _ body: (borrowing Path.Borrowed, borrowing Path.Borrowed, borrowing Path.Borrowed) -> R
     ) throws(Path.String.Conversion.Error) -> R {
         var count1 = 0
         var count2 = 0

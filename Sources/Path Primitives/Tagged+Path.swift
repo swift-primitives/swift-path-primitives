@@ -50,9 +50,9 @@ extension Tagged where RawValue == Path, Tag: ~Copyable {
         unsafe self.init(__unchecked: (), Path(adopting: pointer, count: count))
     }
 
-    /// Creates a tagged path by copying from a string view.
+    /// Creates a tagged path by copying from a borrowed string view.
     @inlinable
-    public init(copying view: borrowing String_Primitives.String.View) {
+    public init(copying view: borrowing String_Primitives.String.Borrowed) {
         self.init(__unchecked: (), Path(copying: view))
     }
 
@@ -60,7 +60,7 @@ extension Tagged where RawValue == Path, Tag: ~Copyable {
     ///
     /// Allocates new storage, copies the span's content, and appends a
     /// null terminator. The span is typically obtained from
-    /// ``Path/View/span`` or ``Path/Protocol/parent`` — sub-views
+    /// ``Path/Borrowed/span`` or ``Path/Protocol/parent`` — sub-views
     /// of an existing path that need to become owned for syscall use.
     @inlinable
     public init(_ span: Span<Path.Char>) {
@@ -75,9 +75,9 @@ extension Tagged where RawValue == Path, Tag: ~Copyable {
     @inlinable
     public var count: Int { rawValue.count }
 
-    /// Returns a view of this path.
+    /// Returns a borrowed view of this path.
     @inlinable
-    public var view: Path.View {
+    public var view: Path.Borrowed {
         @_lifetime(borrow self) borrowing get {
             let v = rawValue.view
             return unsafe _overrideLifetime(v, borrowing: self)

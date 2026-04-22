@@ -23,7 +23,7 @@ extension Path {
     /// - L2 `Path.Protocol` conformances (POSIX, Windows), each supplying its
     ///   own separator constants.
     /// - L3 path types that own their storage and duplicate decomposition
-    ///   directly on their bytes, rather than going through a `Path.View`.
+    ///   directly on their bytes, rather than going through a `Path.Borrowed`.
     ///
     /// The higher-level branching (what to return for empty results, how to
     /// handle drive letters, whether a leading separator denotes a root) is

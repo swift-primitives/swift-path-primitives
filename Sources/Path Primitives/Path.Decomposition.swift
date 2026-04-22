@@ -17,7 +17,7 @@ extension Path {
     /// The decomposition API for path views — zero-allocation sub-views over
     /// the path's bytes.
     ///
-    /// Platform packages conform `Path.View` to this protocol with
+    /// Platform packages conform `Path.Borrowed` to this protocol with
     /// platform-specific separator logic (e.g., `/` for POSIX; `/` and
     /// `\` for Windows). The protocol extension provides instance-level
     /// defaults for consumer convenience.
