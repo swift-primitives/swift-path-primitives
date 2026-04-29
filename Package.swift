@@ -22,6 +22,7 @@ let package = Package(
         .package(path: "../swift-memory-primitives"),
         .package(path: "../swift-tagged-primitives"),
         .package(path: "../swift-ownership-primitives"),
+        .package(path: "../swift-error-primitives"),
     ],
     targets: [
         .target(
@@ -31,6 +32,7 @@ let package = Package(
                 .product(name: "Memory Primitives Core", package: "swift-memory-primitives"),
                 .product(name: "Tagged Primitives", package: "swift-tagged-primitives"),
                 .product(name: "Ownership Primitives", package: "swift-ownership-primitives"),
+                .product(name: "Error Primitives", package: "swift-error-primitives"),
             ],
             swiftSettings: [
                 .define("PATH_PRIMITIVES_AVAILABLE", .when(platforms: [
