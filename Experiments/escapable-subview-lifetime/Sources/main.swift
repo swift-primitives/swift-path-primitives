@@ -8,6 +8,7 @@
 // Platform: macOS 26.0 (arm64)
 //
 // Result: CONFIRMED — all 6 variants compile and produce correct output
+// Revalidated: Swift 6.3.1 (2026-04-30) — PASSES
 // Date: 2026-03-31
 
 // =============================================================================
