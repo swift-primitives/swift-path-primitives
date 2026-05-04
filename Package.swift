@@ -15,7 +15,11 @@ let package = Package(
         .library(
             name: "Path Primitives",
             targets: ["Path Primitives"]
-        )
+        ),
+        .library(
+            name: "Path Primitives Test Support",
+            targets: ["Path Primitives Test Support"]
+        ),
     ],
     dependencies: [
         .package(path: "../swift-string-primitives"),
@@ -41,10 +45,19 @@ let package = Package(
                 ]))
             ]
         ),
+        .target(
+            name: "Path Primitives Test Support",
+            dependencies: [
+                "Path Primitives",
+                .product(name: "Tagged Primitives Test Support", package: "swift-tagged-primitives"),
+            ],
+            path: "Tests/Support"
+        ),
         .testTarget(
             name: "Path Primitives Tests",
             dependencies: [
                 "Path Primitives",
+                "Path Primitives Test Support",
             ]
         ),
     ],
