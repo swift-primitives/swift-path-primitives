@@ -17,7 +17,7 @@ public import String_Primitives
 
 // MARK: - Nested Type Aliases
 
-extension Tagged where RawValue == Path, Tag: ~Copyable {
+extension Tagged where Underlying == Path, Tag: ~Copyable {
     /// Errors from path string conversion.
     public typealias ConversionError = Path.ConversionError
 
@@ -33,7 +33,7 @@ extension Tagged where RawValue == Path, Tag: ~Copyable {
 
 // MARK: - Static Members
 
-extension Tagged where RawValue == Path, Tag: ~Copyable {
+extension Tagged where Underlying == Path, Tag: ~Copyable {
     /// Nested accessor for scoped string-to-path conversions.
     @inlinable
     public static var scope: Path.String.Scope { Path.String.Scope() }
@@ -41,19 +41,19 @@ extension Tagged where RawValue == Path, Tag: ~Copyable {
 
 // MARK: - Initialization
 
-extension Tagged where RawValue == Path, Tag: ~Copyable {
+extension Tagged where Underlying == Path, Tag: ~Copyable {
     /// Creates a tagged path by adopting an existing allocation.
     ///
     /// Takes ownership of `pointer`. The caller must not deallocate it.
     @inlinable
     public init(adopting pointer: UnsafeMutablePointer<Path.Char>, count: Int) {
-        unsafe self.init(__unchecked: (), Path(adopting: pointer, count: count))
+        unsafe self.init(_unchecked: Path(adopting: pointer, count: count))
     }
 
     /// Creates a tagged path by copying from a borrowed string view.
     @inlinable
     public init(copying view: borrowing String_Primitives.String.Borrowed) {
-        self.init(__unchecked: (), Path(copying: view))
+        self.init(_unchecked: Path(copying: view))
     }
 
     /// Creates a tagged path by copying from a span of path bytes.
@@ -64,44 +64,33 @@ extension Tagged where RawValue == Path, Tag: ~Copyable {
     /// of an existing path that need to become owned for syscall use.
     @inlinable
     public init(_ span: Span<Path.Char>) {
-        self.init(__unchecked: (), Path(span))
+        self.init(_unchecked: Path(span))
     }
 }
 
 // MARK: - Properties
 
-extension Tagged where RawValue == Path, Tag: ~Copyable {
+extension Tagged where Underlying == Path, Tag: ~Copyable {
     /// The length of the path in code units, excluding the null terminator.
     @inlinable
-    public var count: Int { rawValue.count }
+    public var count: Int { underlying.count }
 
-    /// Returns a borrowed view of this path.
-    @inlinable
-    public var view: Path.Borrowed {
-        @_lifetime(borrow self) borrowing get {
-            let v = rawValue.view
-            return unsafe _overrideLifetime(v, borrowing: self)
-        }
-    }
-
-    /// Returns a `Span` view of the path content, excluding the null terminator.
-    ///
-    /// Two-level `@_lifetime` chain:
-    /// 1. `rawValue.content` borrows from `rawValue` (stored property)
-    /// 2. `_overrideLifetime` re-parents the Span's lifetime to `self`
-    @inlinable
-    public var content: Span<Path.Char> {
-        @_lifetime(borrow self) borrowing get {
-            let s = rawValue.content
-            return unsafe _overrideLifetime(s, borrowing: self)
-        }
-    }
+    // `view` (Path.Borrowed) and `content` (Span<Path.Char>) are
+    // intentionally absent on Tagged<Tag, Path> — they would need to
+    // chain a lifetime-dependent return through Tagged's `_read`-yielded
+    // `underlying` accessor, which Swift 6.3.1's lifetime checker does
+    // not currently support. Consumers borrow Path's APIs by accessing
+    // the underlying directly via the Tagged.underlying yield in their
+    // own scope. Restoring the convenience accessors here is in scope
+    // for a follow-up that adds a borrow-returning Tagged accessor for
+    // ~Copyable Underlying or refactors Path's `view`/`content` to
+    // closure-based shapes.
 }
 
 
 // MARK: - Ownership Transfer
 
-extension Tagged where RawValue == Path, Tag: ~Copyable {
+extension Tagged where Underlying == Path, Tag: ~Copyable {
     /// Transfers ownership of the underlying buffer to the caller.
     ///
     /// Returns the pointer and count. The caller is responsible for deallocation.
@@ -109,7 +98,7 @@ extension Tagged where RawValue == Path, Tag: ~Copyable {
     @unsafe
     @inlinable
     public consuming func take() -> (pointer: UnsafeMutablePointer<Path.Char>, count: Int) {
-        unsafe rawValue.take()
+        unsafe self.map { (p: consuming Path) in unsafe p.take() }.underlying
     }
 }
 
