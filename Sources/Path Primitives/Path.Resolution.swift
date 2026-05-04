@@ -11,14 +11,14 @@
 
 #if PATH_PRIMITIVES_AVAILABLE && (os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS) || os(Linux) || os(Android) || os(OpenBSD) || os(Windows))
 
-extension Path {
-    /// Path resolution domain — errors during path lookup.
-    ///
-    /// These errors occur when the kernel attempts to resolve a path
-    /// to an actual filesystem object.
-    public enum Resolution: Sendable {
+    extension Path {
+        /// Path resolution domain — errors during path lookup.
+        ///
+        /// These errors occur when the kernel attempts to resolve a path
+        /// to an actual filesystem object.
+        public enum Resolution: Sendable {
 
+        }
     }
-}
 
 #endif

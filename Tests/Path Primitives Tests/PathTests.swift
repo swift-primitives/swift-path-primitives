@@ -9,5 +9,5 @@
 //
 // ===----------------------------------------------------------------------===//
 
-import Testing
 import Path_Primitives
+import Testing

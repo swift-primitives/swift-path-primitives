@@ -11,111 +11,111 @@
 
 #if PATH_PRIMITIVES_AVAILABLE && (os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS) || os(Linux) || os(Android) || os(OpenBSD) || os(Windows))
 
-internal import String_Primitives
-public import Memory_Primitives_Core
-public import Ownership_Primitives
+    internal import String_Primitives
+    public import Memory_Primitives_Core
+    public import Ownership_Primitives
 
-// MARK: - Ownership.Borrow.`Protocol` Conformance
+    // MARK: - Ownership.Borrow.`Protocol` Conformance
 
-extension Path: Ownership.Borrow.`Protocol` {}
+    extension Path: Ownership.Borrow.`Protocol` {}
 
-// MARK: - Borrowed
+    // MARK: - Borrowed
 
-extension Path {
-    /// Non-escapable borrowed view of a null-terminated path.
-    ///
-    /// Does not own storage. Valid only for the duration of the borrowing scope.
-    /// The referenced memory must remain valid and unmodified while borrowed.
-    ///
-    /// `~Escapable` enforces at compile time that this value cannot escape
-    /// the scope where it was created — preventing use-after-free bugs.
-    ///
-    /// Invariant: Points to a null-terminated sequence.
-    @safe
-    public struct Borrowed: ~Copyable, ~Escapable {
-        /// The underlying pointer to the null-terminated sequence.
-        public let pointer: UnsafePointer<Char>
-
-        /// The length in code units, excluding the null terminator.
-        public let count: Int
-
-        /// Creates a borrowed view from a pointer and count.
+    extension Path {
+        /// Non-escapable borrowed view of a null-terminated path.
         ///
-        /// The lifetime of this `Borrowed` value is tied to the lifetime of `pointer`.
+        /// Does not own storage. Valid only for the duration of the borrowing scope.
+        /// The referenced memory must remain valid and unmodified while borrowed.
         ///
-        /// - Precondition: `pointer` must point to a null-terminated sequence.
-        @inlinable
-        @_lifetime(borrow pointer)
-        public init(_ pointer: UnsafePointer<Path.Char>, count: Int) {
-            #if DEBUG
-            unsafe Self.debugValidateTermination(pointer)
-            #endif
-            unsafe (self.pointer = pointer)
-            self.count = count
-        }
-    }
-}
+        /// `~Escapable` enforces at compile time that this value cannot escape
+        /// the scope where it was created — preventing use-after-free bugs.
+        ///
+        /// Invariant: Points to a null-terminated sequence.
+        @safe
+        public struct Borrowed: ~Copyable, ~Escapable {
+            /// The underlying pointer to the null-terminated sequence.
+            public let pointer: UnsafePointer<Char>
 
-// MARK: - Debug Validation
+            /// The length in code units, excluding the null terminator.
+            public let count: Int
 
-#if DEBUG
-extension Path.Borrowed {
-    /// Maximum bytes to scan when validating termination in debug builds.
-    @usableFromInline
-    internal static let maxDebugScanLength = 16 * 1024 * 1024 // 16 MiB
-
-    @unsafe
-    @usableFromInline
-    internal static func debugValidateTermination(_ pointer: UnsafePointer<Path.Char>) {
-        var current = unsafe pointer
-        var scanned = 0
-        while scanned < maxDebugScanLength {
-            if unsafe current.pointee == 0 {
-                return // Valid: found terminator
+            /// Creates a borrowed view from a pointer and count.
+            ///
+            /// The lifetime of this `Borrowed` value is tied to the lifetime of `pointer`.
+            ///
+            /// - Precondition: `pointer` must point to a null-terminated sequence.
+            @inlinable
+            @_lifetime(borrow pointer)
+            public init(_ pointer: UnsafePointer<Path.Char>, count: Int) {
+                #if DEBUG
+                    unsafe Self.debugValidateTermination(pointer)
+                #endif
+                unsafe (self.pointer = pointer)
+                self.count = count
             }
-            unsafe (current = current.successor())
-            scanned += 1
-        }
-        assertionFailure("Path.Borrowed: pointer does not appear to be null-terminated within \(maxDebugScanLength) code units")
-    }
-}
-#endif
-
-// MARK: - Access
-
-extension Path.Borrowed {
-    /// Executes a closure with the underlying pointer.
-    @unsafe
-    @inlinable
-    public borrowing func withUnsafePointer<R: ~Copyable, E: Swift.Error>(
-        _ body: (UnsafePointer<Path.Char>) throws(E) -> R
-    ) throws(E) -> R {
-        try unsafe body(pointer)
-    }
-
-    /// Returns a `Span` view of the path content, excluding the null terminator.
-    @inlinable
-    public var span: Span<Path.Char> {
-        @_lifetime(copy self) borrowing get {
-            let span = unsafe Span(_unsafeStart: pointer, count: count)
-            return unsafe _overrideLifetime(span, copying: self)
         }
     }
-}
 
-// MARK: - Borrowed Property
+    // MARK: - Debug Validation
 
-extension Path {
-    /// Returns a borrowed view of this path.
-    ///
-    /// The lifetime of the returned `Borrowed` is tied to `self`.
-    @inlinable
-    public var view: Borrowed {
-        @_lifetime(borrow self) borrowing get {
-            let view = unsafe Borrowed(_storage.unsafeBaseAddress, count: _storage.count)
-            return unsafe _overrideLifetime(view, borrowing: self)
+    #if DEBUG
+        extension Path.Borrowed {
+            /// Maximum bytes to scan when validating termination in debug builds.
+            @usableFromInline
+            internal static let maxDebugScanLength = 16 * 1024 * 1024  // 16 MiB
+
+            @unsafe
+            @usableFromInline
+            internal static func debugValidateTermination(_ pointer: UnsafePointer<Path.Char>) {
+                var current = unsafe pointer
+                var scanned = 0
+                while scanned < maxDebugScanLength {
+                    if unsafe current.pointee == 0 {
+                        return  // Valid: found terminator
+                    }
+                    unsafe (current = current.successor())
+                    scanned += 1
+                }
+                assertionFailure("Path.Borrowed: pointer does not appear to be null-terminated within \(maxDebugScanLength) code units")
+            }
+        }
+    #endif
+
+    // MARK: - Access
+
+    extension Path.Borrowed {
+        /// Executes a closure with the underlying pointer.
+        @unsafe
+        @inlinable
+        public borrowing func withUnsafePointer<R: ~Copyable, E: Swift.Error>(
+            _ body: (UnsafePointer<Path.Char>) throws(E) -> R
+        ) throws(E) -> R {
+            try unsafe body(pointer)
+        }
+
+        /// Returns a `Span` view of the path content, excluding the null terminator.
+        @inlinable
+        public var span: Span<Path.Char> {
+            @_lifetime(copy self) borrowing get {
+                let span = unsafe Span(_unsafeStart: pointer, count: count)
+                return unsafe _overrideLifetime(span, copying: self)
+            }
         }
     }
-}
+
+    // MARK: - Borrowed Property
+
+    extension Path {
+        /// Returns a borrowed view of this path.
+        ///
+        /// The lifetime of the returned `Borrowed` is tied to `self`.
+        @inlinable
+        public var view: Borrowed {
+            @_lifetime(borrow self) borrowing get {
+                let view = unsafe Borrowed(_storage.unsafeBaseAddress, count: _storage.count)
+                return unsafe _overrideLifetime(view, borrowing: self)
+            }
+        }
+    }
 
 #endif
