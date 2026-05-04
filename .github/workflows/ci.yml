@@ -27,11 +27,6 @@ jobs:
   docs:
     uses: swift-institute/.github/.github/workflows/swift-docs.yml@main
     with:
-      umbrella-module: Path_Primitives
-      umbrella-display-name: "Path Primitives"
-      umbrella-bundle-id: "swift-path-primitives.Path-Primitives"
-      umbrella-docc-path: "Sources/Path Primitives/Path Primitives.docc"
-      exclude-modules: ""
       enable-private-repos: true
     secrets:
       PRIVATE_REPO_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
