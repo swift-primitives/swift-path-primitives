@@ -51,8 +51,9 @@
             primary: Path.Char,
             alt: Path.Char? = nil
         ) -> Int? {
-            var i = bytes.count - 1
-            while i >= 0 {
+            var i = bytes.count
+            while i > 0 {
+                i -= 1
                 let b = bytes[i]
                 if b == primary {
                     return i
@@ -60,7 +61,6 @@
                 if let alt, b == alt {
                     return i
                 }
-                i -= 1
             }
             return nil
         }
