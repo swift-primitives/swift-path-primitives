@@ -12,7 +12,7 @@
 #if PATH_PRIMITIVES_AVAILABLE && (os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS) || os(Linux) || os(Android) || os(OpenBSD) || os(Windows))
 
     internal import String_Primitives
-    public import Memory_Primitives_Core
+    public import Memory_Contiguous_Primitives
     public import Ownership_Primitives
 
     // MARK: - Ownership.Borrow.`Protocol` Conformance

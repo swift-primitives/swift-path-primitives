@@ -12,7 +12,7 @@
 #if PATH_PRIMITIVES_AVAILABLE && (os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS) || os(Linux) || os(Android) || os(OpenBSD) || os(Windows))
 
     public import String_Primitives
-    public import Memory_Primitives_Core
+    public import Memory_Contiguous_Primitives
 
     /// An owned, lifetime-safe path wrapper for syscall use.
     ///
@@ -45,7 +45,7 @@
     public struct Path: ~Copyable, @unsafe @unchecked Sendable {
         /// Internal storage for the null-terminated contiguous memory region.
         @usableFromInline
-        internal let _storage: Memory_Primitives_Core.Memory.Contiguous<String_Primitives.String.Char>
+        internal let _storage: Memory_Contiguous_Primitives.Memory.Contiguous<String_Primitives.String.Char>
     }
 
     // MARK: - Platform Character Type
@@ -77,7 +77,7 @@
             #if DEBUG
                 precondition(unsafe pointer[count] == String_Primitives.String.terminator, "Path: adopted buffer must be null-terminated")
             #endif
-            unsafe self._storage = Memory_Primitives_Core.Memory.Contiguous(adopting: pointer, count: count)
+            unsafe self._storage = Memory_Contiguous_Primitives.Memory.Contiguous(adopting: pointer, count: count)
         }
 
         /// Creates an owned path by copying from a borrowed string view.

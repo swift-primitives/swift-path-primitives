@@ -12,7 +12,7 @@
 #if PATH_PRIMITIVES_AVAILABLE && (os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS) || os(Linux) || os(Android) || os(OpenBSD) || os(Windows))
 
     public import Tagged_Primitives
-    internal import Memory_Primitives_Core
+    internal import Memory_Contiguous_Primitives
     public import String_Primitives
 
     // MARK: - Nested Type Aliases

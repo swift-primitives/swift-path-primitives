@@ -33,7 +33,7 @@ let package = Package(
             name: "Path Primitives",
             dependencies: [
                 .product(name: "String Primitives", package: "swift-string-primitives"),
-                .product(name: "Memory Primitives Core", package: "swift-memory-primitives"),
+                .product(name: "Memory Contiguous Primitives", package: "swift-memory-primitives"),
                 .product(name: "Tagged Primitives", package: "swift-tagged-primitives"),
                 .product(name: "Ownership Primitives", package: "swift-ownership-primitives"),
                 .product(name: "Error Primitives", package: "swift-error-primitives"),
