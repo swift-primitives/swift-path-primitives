@@ -22,11 +22,11 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(path: "../swift-string-primitives"),
-        .package(path: "../swift-memory-primitives"),
-        .package(path: "../swift-tagged-primitives"),
-        .package(path: "../swift-ownership-primitives"),
-        .package(path: "../swift-error-primitives"),
+        .package(url: "https://github.com/swift-primitives/swift-string-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-memory-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-tagged-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-ownership-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-error-primitives.git", branch: "main"),
     ],
     targets: [
         .target(
