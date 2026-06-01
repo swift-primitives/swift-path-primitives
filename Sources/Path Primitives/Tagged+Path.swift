@@ -17,7 +17,7 @@
 
     // MARK: - Nested Type Aliases
 
-    extension Tagged where Underlying == Path, Tag: ~Copyable {
+    extension Tagged where Underlying == Path, Tag: ~Copyable & ~Escapable {
         /// Errors from path string conversion.
         public typealias ConversionError = Path.ConversionError
 
@@ -33,7 +33,7 @@
 
     // MARK: - Static Members
 
-    extension Tagged where Underlying == Path, Tag: ~Copyable {
+    extension Tagged where Underlying == Path, Tag: ~Copyable & ~Escapable {
         /// Nested accessor for scoped string-to-path conversions.
         @inlinable
         public static var scope: Path.String.Scope { Path.String.Scope() }
@@ -41,7 +41,7 @@
 
     // MARK: - Initialization
 
-    extension Tagged where Underlying == Path, Tag: ~Copyable {
+    extension Tagged where Underlying == Path, Tag: ~Copyable & ~Escapable {
         /// Creates a tagged path by adopting an existing allocation.
         ///
         /// Takes ownership of `pointer`. The caller must not deallocate it.
@@ -70,7 +70,7 @@
 
     // MARK: - Properties
 
-    extension Tagged where Underlying == Path, Tag: ~Copyable {
+    extension Tagged where Underlying == Path, Tag: ~Copyable & ~Escapable {
         /// The length of the path in code units, excluding the null terminator.
         @inlinable
         public var count: Int { underlying.count }
@@ -89,7 +89,7 @@
 
     // MARK: - Ownership Transfer
 
-    extension Tagged where Underlying == Path, Tag: ~Copyable {
+    extension Tagged where Underlying == Path, Tag: ~Copyable & ~Escapable {
         /// Transfers ownership of the underlying buffer to the caller.
         ///
         /// Returns the pointer and count. The caller is responsible for deallocation.
