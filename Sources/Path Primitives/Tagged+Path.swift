@@ -63,7 +63,7 @@
         /// ``Path/Borrowed/span`` or ``Path/Protocol/parent`` — sub-views
         /// of an existing path that need to become owned for syscall use.
         @inlinable
-        public init(_ span: Span<Path.Char>) {
+        public init(_ span: Swift.Span<Path.Char>) {
             self.init(_unchecked: Path(span))
         }
     }
@@ -75,7 +75,7 @@
         @inlinable
         public var count: Int { underlying.count }
 
-        // `view` (Path.Borrowed) and `content` (Span<Path.Char>) are
+        // `view` (Path.Borrowed) and `content` (Swift.Span<Path.Char>) are
         // intentionally absent on Tagged<Tag, Path> — they would need to
         // chain a lifetime-dependent return through Tagged's `_read`-yielded
         // `underlying` accessor, which Swift 6.3.1's lifetime checker does

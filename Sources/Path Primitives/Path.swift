@@ -104,7 +104,7 @@
         ///
         /// - Parameter span: The path bytes to copy.
         @inlinable
-        public init(_ span: Span<Char>) {
+        public init(_ span: Swift.Span<Char>) {
             let length = span.count
             let buffer = UnsafeMutablePointer<Char>.allocate(capacity: length + 1)
             for i in 0..<length {
@@ -133,7 +133,7 @@
         ///
         /// O(1) complexity. The span's lifetime is tied to this path.
         @inlinable
-        public var content: Span<Char> {
+        public var content: Swift.Span<Char> {
             @_lifetime(borrow self) borrowing get {
                 let s = _storage.span
                 return unsafe _overrideLifetime(s, borrowing: self)

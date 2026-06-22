@@ -32,8 +32,8 @@
         /// provide the single-word instance API per [API-NAME-002]:
         ///
         /// ```swift
-        /// path.view.parent     // Span<Char>?  — zero-alloc, NOT null-terminated
-        /// path.view.component  // Span<Char>   — zero-alloc, IS null-terminated
+        /// path.view.parent     // Swift.Span<Char>?  — zero-alloc, NOT null-terminated
+        /// path.view.component  // Swift.Span<Char>   — zero-alloc, IS null-terminated
         /// ```
         ///
         /// Binary decomposition: `parent` + `component` = path.
@@ -43,11 +43,11 @@
         /// Per [IMPL-081], return types reflect which invariants survive
         /// sub-slicing:
         ///
-        /// - `parent` returns `Span<Char>?` because a prefix ending at the
+        /// - `parent` returns `Swift.Span<Char>?` because a prefix ending at the
         ///   last separator is NOT null-terminated — the separator byte at
         ///   the boundary is excluded. Callers construct `Path(span)` when
         ///   syscall use requires null termination.
-        /// - `component` returns `Span<Char>` because the suffix from the
+        /// - `component` returns `Swift.Span<Char>` because the suffix from the
         ///   last separator to the end IS null-terminated — it shares the
         ///   original path's terminator.
         public protocol Decomposition: ~Copyable, ~Escapable {
@@ -65,7 +65,7 @@
             /// The returned span is NOT null-terminated — the separator byte
             /// at the boundary is excluded.
             @_lifetime(copy view)
-            static func parent(of view: borrowing Self) -> Span<Char>?
+            static func parent(of view: borrowing Self) -> Swift.Span<Char>?
 
             /// Returns the last component bytes as a sub-view of `view`.
             ///
@@ -75,7 +75,7 @@
             /// The returned span IS null-terminated — it shares the original
             /// path's terminator byte.
             @_lifetime(copy view)
-            static func component(of view: borrowing Self) -> Span<Char>
+            static func component(of view: borrowing Self) -> Swift.Span<Char>
         }
     }
 
@@ -86,7 +86,7 @@
         ///
         /// Zero-allocation sub-view. NOT null-terminated.
         @inlinable
-        public var parent: Span<Char>? {
+        public var parent: Swift.Span<Char>? {
             @_lifetime(copy self)
             borrowing get { Self.parent(of: self) }
         }
@@ -95,7 +95,7 @@
         ///
         /// Zero-allocation sub-view. IS null-terminated.
         @inlinable
-        public var component: Span<Char> {
+        public var component: Swift.Span<Char> {
             @_lifetime(copy self)
             borrowing get { Self.component(of: self) }
         }

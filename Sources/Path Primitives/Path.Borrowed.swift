@@ -98,7 +98,7 @@
 
         /// Returns a `Span` view of the path content, excluding the null terminator.
         @inlinable
-        public var span: Span<Path.Char> {
+        public var span: Swift.Span<Path.Char> {
             @_lifetime(copy self) borrowing get {
                 let span = unsafe Span(_unsafeStart: pointer, count: count)
                 return unsafe _overrideLifetime(span, copying: self)
