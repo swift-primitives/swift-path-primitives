@@ -12,7 +12,6 @@
 #if PATH_PRIMITIVES_AVAILABLE && (os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS) || os(Linux) || os(Android) || os(OpenBSD) || os(Windows))
 
     internal import String_Primitives
-    public import Memory_Contiguous_Primitives
     public import Ownership_Primitives
 
     // MARK: - Ownership.Borrow.`Protocol` Conformance
@@ -115,7 +114,7 @@
         @inlinable
         public var view: Borrowed {
             @_lifetime(borrow self) borrowing get {
-                let view = unsafe Borrowed(_storage.unsafeBaseAddress, count: _storage.count)
+                let view = unsafe Borrowed(_base, count: count)
                 return unsafe _overrideLifetime(view, borrowing: self)
             }
         }

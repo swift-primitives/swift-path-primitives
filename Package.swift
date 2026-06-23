@@ -23,7 +23,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/swift-primitives/swift-string-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-memory-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-memory-heap-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-tagged-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-ownership-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-error-primitives.git", branch: "main"),
@@ -33,7 +33,7 @@ let package = Package(
             name: "Path Primitives",
             dependencies: [
                 .product(name: "String Primitives", package: "swift-string-primitives"),
-                .product(name: "Memory Contiguous Primitives", package: "swift-memory-primitives"),
+                .product(name: "Memory Heap Primitives", package: "swift-memory-heap-primitives"),
                 .product(name: "Tagged Primitives", package: "swift-tagged-primitives"),
                 .product(name: "Ownership Primitives", package: "swift-ownership-primitives"),
                 .product(name: "Error Primitives", package: "swift-error-primitives"),

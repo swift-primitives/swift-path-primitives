@@ -12,13 +12,14 @@
 #if PATH_PRIMITIVES_AVAILABLE && (os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS) || os(Linux) || os(Android) || os(OpenBSD) || os(Windows))
 
     public import String_Primitives
-    public import Memory_Contiguous_Primitives
+    public import Memory_Heap_Primitives
 
     /// An owned, lifetime-safe path wrapper for syscall use.
     ///
     /// Owns a null-terminated contiguous memory region and
     /// deallocates it on destruction. Storage is backed by
-    /// `Memory.Contiguous<Char>` for O(1) count/span access.
+    /// `Memory.Heap` (raw bytes + a Path-owned typed `Char` view) for
+    /// O(1) count/span access.
     ///
     /// - All raw pointer access is through scoped closures that prevent escape
     /// - The type is `~Copyable` to prevent implicit duplication
@@ -30,7 +31,7 @@
     ///
     /// ## Safety Invariant
     ///
-    /// `Path` is `~Copyable` and owns an immutable `Memory.Contiguous` buffer.
+    /// `Path` is `~Copyable` and owns an immutable `Memory.Heap` byte region.
     /// The buffer is uniquely owned and immutable after initialization.
     /// Cross-thread transfer via move relinquishes the sender's access.
     ///
@@ -44,8 +45,13 @@
     @safe
     public struct Path: ~Copyable, @unsafe @unchecked Sendable {
         /// Internal storage for the null-terminated contiguous memory region.
+        ///
+        /// `Memory.Heap` owns the raw allocation; its byte `capacity` is the tracked content length
+        /// (`count * stride(Char)`), so `count = capacity / stride(Char)`. `Char` is `BitwiseCopyable`,
+        /// so `Path` reinterprets the raw base as `Char` itself (`_base`). The null terminator sits one
+        /// `Char` past the tracked capacity in the real allocation, exactly as before.
         @usableFromInline
-        internal let _storage: Memory_Contiguous_Primitives.Memory.Contiguous<String_Primitives.String.Char>
+        internal let _storage: Memory.Heap
     }
 
     // MARK: - Platform Character Type
@@ -77,7 +83,10 @@
             #if DEBUG
                 precondition(unsafe pointer[count] == String_Primitives.String.terminator, "Path: adopted buffer must be null-terminated")
             #endif
-            unsafe self._storage = Memory_Contiguous_Primitives.Memory.Contiguous(adopting: pointer, count: count)
+            unsafe self._storage = Memory.Heap(
+                adopting: UnsafeMutableRawPointer(pointer),
+                capacity: Memory.Address.Count(UInt(count) * UInt(MemoryLayout<Char>.stride))
+            )
         }
 
         /// Creates an owned path by copying from a borrowed string view.
@@ -91,7 +100,10 @@
             let buffer = UnsafeMutablePointer<Char>.allocate(capacity: length + 1)
             unsafe buffer.initialize(from: view.pointer, count: length)
             (unsafe buffer)[length] = String_Primitives.String.terminator
-            unsafe self._storage = Memory.Contiguous(adopting: buffer, count: length)
+            unsafe self._storage = Memory.Heap(
+                adopting: UnsafeMutableRawPointer(buffer),
+                capacity: Memory.Address.Count(UInt(length) * UInt(MemoryLayout<Char>.stride))
+            )
         }
 
         /// Creates an owned path by copying from a span of path bytes.
@@ -111,18 +123,36 @@
                 (unsafe buffer)[i] = span[i]
             }
             (unsafe buffer)[length] = String_Primitives.String.terminator
-            unsafe self._storage = Memory.Contiguous(adopting: buffer, count: length)
+            unsafe self._storage = Memory.Heap(
+                adopting: UnsafeMutableRawPointer(buffer),
+                capacity: Memory.Address.Count(UInt(length) * UInt(MemoryLayout<Char>.stride))
+            )
         }
     }
 
     // MARK: - Properties
 
     extension Path {
+        /// The typed `Char` base of the owned region — the REAL origin pointer reinterpreted.
+        ///
+        /// Reads `_storage.unsafeBaseAddress` (the real, provenance-carrying origin pointer of the
+        /// `Memory.Heap` region — never a pointer reconstituted from `Memory.Address`,
+        /// [MEM-OWN-015]/[MEM-SAFE-029]) and reinterprets it as `Char`. Sound: `Char` is
+        /// `BitwiseCopyable` and the region is `Char`-sized / `Char`-aligned by construction.
+        @unsafe
+        @inlinable
+        internal var _base: UnsafePointer<Char> {
+            // SAFETY: reinterprets the REAL origin pointer (intact provenance) as `Char`; the region
+            // SAFETY: was allocated `Char`-sized/aligned, so the bound is valid. No `Memory.Address`
+            // SAFETY: round-trip ([MEM-OWN-015]/[MEM-SAFE-029]). Lifetime tied to `self` via `_storage`.
+            unsafe UnsafePointer(_storage.unsafeBaseAddress.assumingMemoryBound(to: Char.self))
+        }
+
         /// The length of the path in code units, excluding the null terminator.
         ///
         /// O(1) complexity.
         @inlinable
-        public var count: Int { _storage.count }
+        public var count: Int { Int(bitPattern: _storage.capacity) / MemoryLayout<Char>.stride }
 
         /// Returns a `Span` view of the path content, excluding the null terminator.
         ///
@@ -135,7 +165,7 @@
         @inlinable
         public var content: Swift.Span<Char> {
             @_lifetime(borrow self) borrowing get {
-                let s = _storage.span
+                let s = unsafe Swift.Span(_unsafeStart: _base, count: count)
                 return unsafe _overrideLifetime(s, borrowing: self)
             }
         }
@@ -151,7 +181,14 @@
         @unsafe
         @inlinable
         public consuming func take() -> (pointer: UnsafeMutablePointer<Char>, count: Int) {
-            unsafe _storage.take()
+            // `Memory.Heap.take()` hands back the REAL origin pointer + byte capacity and suppresses
+            // its free; reinterpret the raw base as `Char` (provenance intact — no `Memory.Address`
+            // round-trip, [MEM-OWN-015]/[MEM-SAFE-029]) and recover the length from the byte capacity.
+            let (raw, byteCapacity) = unsafe _storage.take()
+            return unsafe (
+                raw.assumingMemoryBound(to: Char.self),
+                Int(bitPattern: byteCapacity) / MemoryLayout<Char>.stride
+            )
         }
     }
 
