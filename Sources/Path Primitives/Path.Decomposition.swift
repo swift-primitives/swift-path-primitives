@@ -82,9 +82,9 @@
     // MARK: - Instance API (Decomposition Defaults)
 
     extension Path.Decomposition where Self: ~Copyable, Self: ~Escapable {
-        /// The parent directory bytes. `nil` for roots and bare filenames.
+        /// The parent directory bytes.
         ///
-        /// Zero-allocation sub-view. NOT null-terminated.
+        /// `nil` for roots and bare filenames. Zero-allocation sub-view. NOT null-terminated.
         @inlinable
         public var parent: Swift.Span<Char>? {
             @_lifetime(copy self)
