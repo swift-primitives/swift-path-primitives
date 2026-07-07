@@ -91,9 +91,10 @@
             borrowing get { Self.parent(of: self) }
         }
 
-        /// The last component bytes. Shares the original path's terminator.
+        /// The last component bytes.
         ///
-        /// Zero-allocation sub-view. IS null-terminated.
+        /// Shares the terminator of the original path. Zero-allocation sub-view.
+        /// IS null-terminated.
         @inlinable
         public var component: Swift.Span<Char> {
             @_lifetime(copy self)

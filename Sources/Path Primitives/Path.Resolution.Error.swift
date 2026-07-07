@@ -57,6 +57,7 @@
     // MARK: - CustomStringConvertible
 
     extension Path.Resolution.Error: CustomStringConvertible {
+        /// A human-readable description of this resolution error.
         public var description: Swift.String {
             switch self {
             case .notFound: return "not found"

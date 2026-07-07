@@ -9,8 +9,8 @@
 //
 // ===----------------------------------------------------------------------===//
 
-import Testing
 import Path_Primitives
+import Testing
 
 extension Path {
     @Suite
@@ -34,7 +34,7 @@ extension Path.Sanitization.Sanitized {
     func `Slashes are replaced with underscores`() {
         #expect(
             Path.sanitized(from: "https://example.com/path/file.swift")
-            == "https___example.com_path_file.swift"
+                == "https___example.com_path_file.swift"
         )
     }
 
@@ -44,13 +44,13 @@ extension Path.Sanitization.Sanitized {
         let urlB = "https://b.example.com/Lint.swift"
         #expect(
             Path.sanitized(from: urlA)
-            != Path.sanitized(from: urlB)
+                != Path.sanitized(from: urlB)
         )
     }
 
     @Test
     func `Empty input maps to empty output`() {
-        #expect(Path.sanitized(from: "") == "")
+        #expect(Path.sanitized(from: "").isEmpty)
     }
 
     @Test

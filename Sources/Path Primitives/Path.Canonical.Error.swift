@@ -32,6 +32,7 @@
     // MARK: - Equatable
 
     extension Path.Canonical.Error: Equatable {
+        /// Compares two canonicalization errors by case and payload.
         public static func == (lhs: Self, rhs: Self) -> Bool {
             switch (lhs, rhs) {
             case (.path(let l), .path(let r)): return l == r
@@ -44,6 +45,7 @@
     // MARK: - CustomStringConvertible
 
     extension Path.Canonical.Error: CustomStringConvertible {
+        /// A human-readable description of this canonicalization error.
         public var description: Swift.String {
             switch self {
             case .path(let e): return "path canonicalization: \(e)"

@@ -21,6 +21,9 @@
     // MARK: - Borrowed
 
     extension Path {
+        // WHY: Category D (SP-5) — pointer-backed value type; storage is
+        // WHY: private/internal; the type's safe API never lets the raw pointer
+        // WHY: escape, and lifetime invariants are enforced by init/deinit pairing.
         /// Non-escapable borrowed view of a null-terminated path.
         ///
         /// Does not own storage. Valid only for the duration of the borrowing scope.
@@ -30,9 +33,6 @@
         /// the scope where it was created — preventing use-after-free bugs.
         ///
         /// Invariant: Points to a null-terminated sequence.
-        // WHY: Category D (SP-5) — pointer-backed value type; storage is
-        // WHY: private/internal; the type's safe API never lets the raw pointer
-        // WHY: escape, and lifetime invariants are enforced by init/deinit pairing.
         @safe
         public struct Borrowed: ~Copyable, ~Escapable {
             /// The underlying pointer to the null-terminated sequence.

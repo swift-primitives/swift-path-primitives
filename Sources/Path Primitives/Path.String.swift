@@ -117,6 +117,7 @@
     extension Path.String {
         /// Namespace for scoped string-to-path operations.
         public struct Scope {
+            /// Creates a scope for scoped string-to-path conversions.
             @inlinable
             public init() {}
         }
@@ -327,6 +328,7 @@
     extension Path.String.Scope {
         /// Namespace for scoped string array operations.
         public struct Array {
+            /// Creates a scope for scoped string-array conversions.
             @inlinable
             public init() {}
         }

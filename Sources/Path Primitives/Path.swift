@@ -152,7 +152,10 @@
         ///
         /// O(1) complexity.
         @inlinable
-        public var count: Int { Int(bitPattern: _storage.capacity) / MemoryLayout<Char>.stride }
+        public var count: Int {
+            let byteCapacity = Int(bitPattern: _storage.capacity)
+            return byteCapacity / MemoryLayout<Char>.stride
+        }
 
         /// Returns a `Span` view of the path content, excluding the null terminator.
         ///
@@ -185,9 +188,10 @@
             // its free; reinterpret the raw base as `Char` (provenance intact — no `Memory.Address`
             // round-trip, [MEM-OWN-015]/[MEM-SAFE-029]) and recover the length from the byte capacity.
             let (raw, byteCapacity) = unsafe _storage.take()
+            let count = Int(bitPattern: byteCapacity)
             return unsafe (
                 raw.assumingMemoryBound(to: Char.self),
-                Int(bitPattern: byteCapacity) / MemoryLayout<Char>.stride
+                count / MemoryLayout<Char>.stride
             )
         }
     }
