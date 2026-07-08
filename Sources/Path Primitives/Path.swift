@@ -141,7 +141,7 @@
         /// `BitwiseCopyable` and the region is `Char`-sized / `Char`-aligned by construction.
         @unsafe
         @inlinable
-        internal var _base: UnsafePointer<Char> {
+        package var _base: UnsafePointer<Char> {
             // SAFETY: reinterprets the REAL origin pointer (intact provenance) as `Char`; the region
             // SAFETY: was allocated `Char`-sized/aligned, so the bound is valid. No `Memory.Address`
             // SAFETY: round-trip ([MEM-OWN-015]/[MEM-SAFE-029]). Lifetime tied to `self` via `_storage`.

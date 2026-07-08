@@ -17,19 +17,7 @@
         /// Namespace for string-to-path conversion operations.
         public enum String {
             /// Namespace for conversion operations.
-            public enum Conversion {
-                /// Errors that can occur during string-to-path conversion.
-                public enum Error: Swift.Error, Sendable, Equatable {
-                    /// The string contains an interior NUL byte at the given index.
-                    ///
-                    /// Paths must not contain NUL bytes except as the terminator. An interior
-                    /// NUL would cause the path to be silently truncated when passed to syscalls.
-                    ///
-                    /// - Parameter index: For multi-path operations, indicates which argument
-                    ///   (0-based) contained the interior NUL. For single-path operations, always 0.
-                    case interiorNUL(index: Int)
-                }
-            }
+            public enum Conversion {}
 
             /// Typed error wrapper for string-to-path operations.
             ///
@@ -47,6 +35,22 @@
                 /// The body closure threw an error.
                 case body(Body)
             }
+        }
+    }
+
+    // MARK: - Conversion Error
+
+    extension Path.String.Conversion {
+        /// Errors that can occur during string-to-path conversion.
+        public enum Error: Swift.Error, Sendable, Equatable {
+            /// The string contains an interior NUL byte at the given index.
+            ///
+            /// Paths must not contain NUL bytes except as the terminator. An interior
+            /// NUL would cause the path to be silently truncated when passed to syscalls.
+            ///
+            /// - Parameter index: For multi-path operations, indicates which argument
+            ///   (0-based) contained the interior NUL. For single-path operations, always 0.
+            case interiorNUL(index: Int)
         }
     }
 
