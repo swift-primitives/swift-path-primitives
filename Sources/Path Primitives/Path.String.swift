@@ -15,26 +15,30 @@
 
     extension Path {
         /// Namespace for string-to-path conversion operations.
-        public enum String {
-            /// Namespace for conversion operations.
-            public enum Conversion {}
+        public enum String {}
+    }
 
-            /// Typed error wrapper for string-to-path operations.
-            ///
-            /// This error type composes conversion failures with body failures,
-            /// enabling 100% typed throws without existentials.
-            ///
-            /// ## Design
-            /// - Conversion errors (interior NUL, encoding issues) are wrapped in `.conversion`.
-            /// - Body errors are wrapped in `.body(E)`.
-            /// - This is the only place where both failure domains exist in the public API.
-            public enum Error<Body: Swift.Error>: Swift.Error {
-                /// String-to-path conversion failed.
-                case conversion(Conversion.Error)
+    extension Path.String {
+        /// Namespace for conversion operations.
+        public enum Conversion {}
+    }
 
-                /// The body closure threw an error.
-                case body(Body)
-            }
+    extension Path.String {
+        /// Typed error wrapper for string-to-path operations.
+        ///
+        /// This error type composes conversion failures with body failures,
+        /// enabling 100% typed throws without existentials.
+        ///
+        /// ## Design
+        /// - Conversion errors (interior NUL, encoding issues) are wrapped in `.conversion`.
+        /// - Body errors are wrapped in `.body(E)`.
+        /// - This is the only place where both failure domains exist in the public API.
+        public enum Error<Body: Swift.Error>: Swift.Error {
+            /// String-to-path conversion failed.
+            case conversion(Conversion.Error)
+
+            /// The body closure threw an error.
+            case body(Body)
         }
     }
 
@@ -148,14 +152,14 @@
         ) throws(Path.String.Error<E>) -> R {
             var count = 0
             let buffer: UnsafeMutablePointer<Path.Char>
-            do {
+            do throws(Path.String.Conversion.Error) {
                 try unsafe (buffer = _allocateBuffer(string, index: 0, count: &count))
             } catch {
                 throw .conversion(error)
             }
             let path = unsafe Path(adopting: buffer, count: count)
             let view = path.view
-            do {
+            do throws(E) {
                 return try body(view)
             } catch {
                 throw .body(error)
@@ -173,7 +177,7 @@
         ) throws(Path.String.Error<NestedBody>) -> R {
             var count = 0
             let buffer: UnsafeMutablePointer<Path.Char>
-            do {
+            do throws(Path.String.Conversion.Error) {
                 try unsafe (buffer = _allocateBuffer(string, index: 0, count: &count))
             } catch {
                 throw .conversion(error)
@@ -209,13 +213,13 @@
             var count2 = 0
             let buffer1: UnsafeMutablePointer<Path.Char>
             let buffer2: UnsafeMutablePointer<Path.Char>
-            do {
+            do throws(Path.String.Conversion.Error) {
                 try unsafe (buffer1 = _allocateBuffer(string1, index: 0, count: &count1))
             } catch {
                 throw .conversion(error)
             }
             let path1 = unsafe Path(adopting: buffer1, count: count1)
-            do {
+            do throws(Path.String.Conversion.Error) {
                 try unsafe (buffer2 = _allocateBuffer(string2, index: 1, count: &count2))
             } catch {
                 throw .conversion(error)
@@ -223,7 +227,7 @@
             let path2 = unsafe Path(adopting: buffer2, count: count2)
             let view1 = path1.view
             let view2 = path2.view
-            do {
+            do throws(E) {
                 return try body(view1, view2)
             } catch {
                 throw .body(error)
@@ -264,19 +268,19 @@
             let buffer1: UnsafeMutablePointer<Path.Char>
             let buffer2: UnsafeMutablePointer<Path.Char>
             let buffer3: UnsafeMutablePointer<Path.Char>
-            do {
+            do throws(Path.String.Conversion.Error) {
                 try unsafe (buffer1 = _allocateBuffer(string1, index: 0, count: &count1))
             } catch {
                 throw .conversion(error)
             }
             let path1 = unsafe Path(adopting: buffer1, count: count1)
-            do {
+            do throws(Path.String.Conversion.Error) {
                 try unsafe (buffer2 = _allocateBuffer(string2, index: 1, count: &count2))
             } catch {
                 throw .conversion(error)
             }
             let path2 = unsafe Path(adopting: buffer2, count: count2)
-            do {
+            do throws(Path.String.Conversion.Error) {
                 try unsafe (buffer3 = _allocateBuffer(string3, index: 2, count: &count3))
             } catch {
                 throw .conversion(error)
@@ -285,7 +289,7 @@
             let view1 = path1.view
             let view2 = path2.view
             let view3 = path3.view
-            do {
+            do throws(E) {
                 return try body(view1, view2, view3)
             } catch {
                 throw .body(error)
@@ -367,7 +371,7 @@
             var unusedCount = 0
             for (index, string) in strings.enumerated() {
                 let buffer: UnsafeMutablePointer<Path.Char>
-                do {
+                do throws(Path.String.Conversion.Error) {
                     try unsafe (buffer = _allocateBuffer(string, index: index, count: &unusedCount))
                 } catch {
                     throw .conversion(error)
@@ -385,7 +389,7 @@
             }
             unsafe pointerArray[strings.count] = nil
 
-            do {
+            do throws(E) {
                 return try unsafe body(UnsafePointer(pointerArray))
             } catch {
                 throw .body(error)
@@ -409,7 +413,7 @@
             var unusedCount = 0
             for (index, string) in strings.enumerated() {
                 let buffer: UnsafeMutablePointer<Path.Char>
-                do {
+                do throws(Path.String.Conversion.Error) {
                     try unsafe (buffer = _allocateBuffer(string, index: index, count: &unusedCount))
                 } catch {
                     throw .conversion(error)
@@ -482,7 +486,7 @@
             var unusedCount = 0
             for (index, string) in strings1.enumerated() {
                 let buffer: UnsafeMutablePointer<Path.Char>
-                do {
+                do throws(Path.String.Conversion.Error) {
                     try unsafe (buffer = _allocateBuffer(string, index: index, count: &unusedCount))
                 } catch {
                     throw .conversion(error)
@@ -496,7 +500,7 @@
 
             for (index, string) in strings2.enumerated() {
                 let buffer: UnsafeMutablePointer<Path.Char>
-                do {
+                do throws(Path.String.Conversion.Error) {
                     try unsafe (buffer = _allocateBuffer(string, index: strings1.count + index, count: &unusedCount))
                 } catch {
                     throw .conversion(error)
@@ -524,7 +528,7 @@
             }
             unsafe pointerArray2[strings2.count] = nil
 
-            do {
+            do throws(E) {
                 return try unsafe body(UnsafePointer(pointerArray1), UnsafePointer(pointerArray2))
             } catch {
                 throw .body(error)
@@ -552,7 +556,7 @@
             var unusedCount = 0
             for (index, string) in strings1.enumerated() {
                 let buffer: UnsafeMutablePointer<Path.Char>
-                do {
+                do throws(Path.String.Conversion.Error) {
                     try unsafe (buffer = _allocateBuffer(string, index: index, count: &unusedCount))
                 } catch {
                     throw .conversion(error)
@@ -566,7 +570,7 @@
 
             for (index, string) in strings2.enumerated() {
                 let buffer: UnsafeMutablePointer<Path.Char>
-                do {
+                do throws(Path.String.Conversion.Error) {
                     try unsafe (buffer = _allocateBuffer(string, index: strings1.count + index, count: &unusedCount))
                 } catch {
                     throw .conversion(error)
