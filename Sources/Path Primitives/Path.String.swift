@@ -203,6 +203,7 @@
 
     extension Path.String.Scope {
         /// Executes a closure with two scoped path views converted from Strings.
+        @_disfavoredOverload
         @inlinable
         public func callAsFunction<S1: StringProtocol, S2: StringProtocol, E: Swift.Error, R: ~Copyable>(
             _ string1: S1,
@@ -255,6 +256,7 @@
 
     extension Path.String.Scope {
         /// Executes a closure with three scoped path views converted from Strings.
+        @_disfavoredOverload
         @inlinable
         public func callAsFunction<S1: StringProtocol, S2: StringProtocol, S3: StringProtocol, E: Swift.Error, R: ~Copyable>(
             _ string1: S1,
