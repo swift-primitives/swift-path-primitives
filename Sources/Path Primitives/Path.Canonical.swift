@@ -21,7 +21,7 @@
         ///
         /// Syscall implementations are in platform-specific packages:
         /// - POSIX: `swift-iso-9945` (`ISO_9945.Kernel.Path.Canonical`)
-        /// - Windows: `swift-windows-primitives` (`Windows.Kernel.Path.Canonical`)
+        /// - Windows: `swift-windows-32` (`Windows.Kernel.Path.Canonical`)
         public enum Canonical {}
     }
 
