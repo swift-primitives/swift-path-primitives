@@ -63,6 +63,13 @@
         /// - POSIX (macOS, Linux): `UInt8` (UTF-8 code units)
         /// - Windows: `UInt16` (UTF-16 code units)
         public typealias Char = String_Primitives.String.Char
+
+        /// Platform-native Unicode encoding paired with `Char`.
+        ///
+        /// Aliases `String_Primitives.String.Codec`: `Unicode.UTF8` on POSIX,
+        /// `Unicode.UTF16` on Windows. Lets buffer encoding iterate
+        /// `Codec.encode(_:)` generically rather than branching on `os(...)`.
+        public typealias Codec = String_Primitives.String.Codec
     }
 
     // MARK: - Initialization

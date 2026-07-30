@@ -667,8 +667,9 @@
     ///
     /// ## Platform Encoding
     ///
-    /// - **POSIX:** UTF-8 (`CChar` / `Int8`)
-    /// - **Windows:** UTF-16LE (`UInt16`)
+    /// Encodes through `Path.Codec` (`String_Primitives.String.Codec`), the encoding
+    /// paired with `Path.Char` at its owner — `Unicode.UTF8` on POSIX, `Unicode.UTF16`
+    /// on Windows — so this allocator carries no platform conditional of its own.
     @usableFromInline
     @unsafe
     internal func _allocateBuffer<S: StringProtocol>(
@@ -677,37 +678,31 @@
         count: inout Int
     ) throws(Path.String.Conversion.Error) -> UnsafeMutablePointer<Path.Char> {
         let s = Swift.String(string)
-        #if os(Windows)
-            let units = s.utf16
-            for unit in units where unit == 0 {
-                throw .interiorNUL(index: index)
+
+        var measured = 0
+        for scalar in s.unicodeScalars {
+            guard let units = Path.Codec.encode(scalar) else { continue }
+            for unit in units {
+                if unit == 0 {
+                    throw .interiorNUL(index: index)
+                }
+                measured += 1
             }
-            count = units.count
-            let bufferCapacity = count + 1
-            let buffer = UnsafeMutablePointer<Path.Char>.allocate(capacity: bufferCapacity)
-            var i = 0
+        }
+
+        count = measured
+        let bufferCapacity = measured + 1
+        let buffer = UnsafeMutablePointer<Path.Char>.allocate(capacity: bufferCapacity)
+        var i = 0
+        for scalar in s.unicodeScalars {
+            guard let units = Path.Codec.encode(scalar) else { continue }
             for unit in units {
                 unsafe buffer[i] = unit
                 i += 1
             }
-            unsafe buffer[i] = 0
-            return unsafe buffer
-        #else
-            let bytes = s.utf8
-            for byte in bytes where byte == 0 {
-                throw .interiorNUL(index: index)
-            }
-            count = bytes.count
-            let bufferCapacity = count + 1
-            let buffer = UnsafeMutablePointer<Path.Char>.allocate(capacity: bufferCapacity)
-            var i = 0
-            for byte in bytes {
-                unsafe buffer[i] = byte
-                i += 1
-            }
-            unsafe buffer[i] = 0
-            return unsafe buffer
-        #endif
+        }
+        unsafe buffer[i] = 0
+        return unsafe buffer
     }
 
 #endif
