@@ -88,7 +88,10 @@
         @inlinable
         public init(adopting pointer: UnsafeMutablePointer<Char>, count: Int) {
             #if DEBUG
-                precondition(unsafe pointer[count] == String_Primitives.String.terminator, "Path: adopted buffer must be null-terminated")
+                precondition(
+                    unsafe pointer[count] == String_Primitives.String.terminator,
+                    "Path: adopted buffer must be null-terminated"
+                )
             #endif
             unsafe self._storage = Memory.Heap(
                 adopting: UnsafeMutableRawPointer(pointer),
