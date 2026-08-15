@@ -205,7 +205,12 @@
         /// Executes a closure with two scoped path views converted from Strings.
         @_disfavoredOverload
         @inlinable
-        public func callAsFunction<S1: StringProtocol, S2: StringProtocol, E: Swift.Error, R: ~Copyable>(
+        public func callAsFunction<
+            S1: StringProtocol,
+            S2: StringProtocol,
+            E: Swift.Error,
+            R: ~Copyable
+        >(
             _ string1: S1,
             _ string2: S2,
             _ body: (borrowing Path.Borrowed, borrowing Path.Borrowed) throws(E) -> R
@@ -258,11 +263,18 @@
         /// Executes a closure with three scoped path views converted from Strings.
         @_disfavoredOverload
         @inlinable
-        public func callAsFunction<S1: StringProtocol, S2: StringProtocol, S3: StringProtocol, E: Swift.Error, R: ~Copyable>(
+        public func callAsFunction<
+            S1: StringProtocol,
+            S2: StringProtocol,
+            S3: StringProtocol,
+            E: Swift.Error,
+            R: ~Copyable
+        >(
             _ string1: S1,
             _ string2: S2,
             _ string3: S3,
-            _ body: (borrowing Path.Borrowed, borrowing Path.Borrowed, borrowing Path.Borrowed) throws(E) -> R
+            _ body: (borrowing Path.Borrowed, borrowing Path.Borrowed, borrowing Path.Borrowed)
+                throws(E) -> R
         ) throws(Path.String.Error<E>) -> R {
             var count1 = 0
             var count2 = 0
@@ -300,7 +312,12 @@
 
         /// Executes a closure with three scoped path views (non-throwing body).
         @inlinable
-        public func callAsFunction<S1: StringProtocol, S2: StringProtocol, S3: StringProtocol, R: ~Copyable>(
+        public func callAsFunction<
+            S1: StringProtocol,
+            S2: StringProtocol,
+            S3: StringProtocol,
+            R: ~Copyable
+        >(
             _ string1: S1,
             _ string2: S2,
             _ string3: S3,
@@ -476,10 +493,17 @@
         @_disfavoredOverload
         @inlinable
         @unsafe
-        public func callAsFunction<S1: StringProtocol, S2: StringProtocol, E: Swift.Error, R: ~Copyable>(
+        public func callAsFunction<
+            S1: StringProtocol,
+            S2: StringProtocol,
+            E: Swift.Error,
+            R: ~Copyable
+        >(
             _ strings1: [S1],
             _ strings2: [S2],
-            _ body: (UnsafePointer<UnsafePointer<Path.Char>?>, UnsafePointer<UnsafePointer<Path.Char>?>) throws(E) -> R
+            _ body: (
+                UnsafePointer<UnsafePointer<Path.Char>?>, UnsafePointer<UnsafePointer<Path.Char>?>
+            ) throws(E) -> R
         ) throws(Path.String.Error<E>) -> R {
             var buffers1: [UnsafeMutablePointer<Path.Char>] = unsafe []
             unsafe buffers1.reserveCapacity(strings1.count)
@@ -503,7 +527,12 @@
             for (index, string) in strings2.enumerated() {
                 let buffer: UnsafeMutablePointer<Path.Char>
                 do throws(Path.String.Conversion.Error) {
-                    try unsafe (buffer = _allocateBuffer(string, index: strings1.count + index, count: &unusedCount))
+                    try
+                        unsafe (buffer = _allocateBuffer(
+                            string,
+                            index: strings1.count + index,
+                            count: &unusedCount
+                        ))
                 } catch {
                     throw .conversion(error)
                 }
@@ -543,7 +572,12 @@
         /// Overload resolution selects this when the body's throw type is `Path.String.Error<E>`.
         @inlinable
         @unsafe
-        public func callAsFunction<S1: StringProtocol, S2: StringProtocol, E: Swift.Error, R: ~Copyable>(
+        public func callAsFunction<
+            S1: StringProtocol,
+            S2: StringProtocol,
+            E: Swift.Error,
+            R: ~Copyable
+        >(
             _ strings1: [S1],
             _ strings2: [S2],
             _ body: (
@@ -573,7 +607,12 @@
             for (index, string) in strings2.enumerated() {
                 let buffer: UnsafeMutablePointer<Path.Char>
                 do throws(Path.String.Conversion.Error) {
-                    try unsafe (buffer = _allocateBuffer(string, index: strings1.count + index, count: &unusedCount))
+                    try
+                        unsafe (buffer = _allocateBuffer(
+                            string,
+                            index: strings1.count + index,
+                            count: &unusedCount
+                        ))
                 } catch {
                     throw .conversion(error)
                 }
@@ -609,7 +648,9 @@
         public func callAsFunction<S1: StringProtocol, S2: StringProtocol, R: ~Copyable>(
             _ strings1: [S1],
             _ strings2: [S2],
-            _ body: (UnsafePointer<UnsafePointer<Path.Char>?>, UnsafePointer<UnsafePointer<Path.Char>?>) -> R
+            _ body: (
+                UnsafePointer<UnsafePointer<Path.Char>?>, UnsafePointer<UnsafePointer<Path.Char>?>
+            ) -> R
         ) throws(Path.String.Conversion.Error) -> R {
             var buffers1: [UnsafeMutablePointer<Path.Char>] = unsafe []
             unsafe buffers1.reserveCapacity(strings1.count)
@@ -626,7 +667,11 @@
             defer { for i in unsafe (0..<buffers2.count) { unsafe buffers2[i].deallocate() } }
 
             for (index, string) in strings2.enumerated() {
-                let buffer = try unsafe _allocateBuffer(string, index: strings1.count + index, count: &unusedCount)
+                let buffer = try unsafe _allocateBuffer(
+                    string,
+                    index: strings1.count + index,
+                    count: &unusedCount
+                )
                 unsafe buffers2.append(buffer)
             }
 

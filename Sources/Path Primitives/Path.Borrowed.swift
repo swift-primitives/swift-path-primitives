@@ -78,7 +78,9 @@
                     unsafe (current = current.successor())
                     scanned += 1
                 }
-                assertionFailure("Path.Borrowed: pointer does not appear to be null-terminated within \(maxDebugScanLength) code units")
+                assertionFailure(
+                    "Path.Borrowed: pointer does not appear to be null-terminated within \(maxDebugScanLength) code units"
+                )
             }
         }
     #endif
