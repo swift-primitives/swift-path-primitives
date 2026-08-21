@@ -1,87 +1,51 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the swift-path-primitives open source project
-//
-// Copyright (c) 2024-2026 Coen ten Thije Boonkkamp and the swift-path-primitives project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE for license information
-//
-// ===----------------------------------------------------------------------===//
-
 #if PATH_PRIMITIVES_AVAILABLE && (os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS) || os(Linux) || os(Android) || os(OpenBSD) || os(Windows))
 
-    // MARK: - String Namespace
-
     extension Path {
-        /// Namespace for string-to-path conversion operations.
+
         public enum String {}
     }
 
     extension Path.String {
-        /// Namespace for conversion operations.
+
         public enum Conversion {}
     }
 
     extension Path.String {
-        /// Typed error wrapper for string-to-path operations.
-        ///
-        /// This error type composes conversion failures with body failures,
-        /// enabling 100% typed throws without existentials.
-        ///
-        /// ## Design
-        /// - Conversion errors (interior NUL, encoding issues) are wrapped in `.conversion`.
-        /// - Body errors are wrapped in `.body(E)`.
-        /// - This is the only place where both failure domains exist in the public API.
+
         public enum Error<Body: Swift.Error>: Swift.Error {
-            /// String-to-path conversion failed.
+
             case conversion(Conversion.Error)
 
-            /// The body closure threw an error.
             case body(Body)
         }
     }
 
-    // MARK: - Conversion Error
-
     extension Path.String.Conversion {
-        /// Errors that can occur during string-to-path conversion.
+
         public enum Error: Swift.Error, Sendable, Equatable {
-            /// The string contains an interior NUL byte at the given index.
-            ///
-            /// Paths must not contain NUL bytes except as the terminator. An interior
-            /// NUL would cause the path to be silently truncated when passed to syscalls.
-            ///
-            /// - Parameter index: For multi-path operations, indicates which argument
-            ///   (0-based) contained the interior NUL. For single-path operations, always 0.
+
             case interiorNUL(index: Int)
         }
     }
-
-    // MARK: - Error Conveniences
 
     extension Path.String.Error: Sendable where Body: Sendable {}
 
     extension Path.String.Error: Equatable where Body: Equatable {}
 
     extension Path.String.Error {
-        /// Returns the body error if this is a `.body` case, otherwise `nil`.
+
         @inlinable
         public var body: Body? {
             if case .body(let e) = self { return e }
             return nil
         }
 
-        /// Returns the conversion error if this is a `.conversion` case, otherwise `nil`.
         @inlinable
         public var conversion: Path.String.Conversion.Error? {
             if case .conversion(let e) = self { return e }
             return nil
         }
 
-        /// Maps the body case to a different error type.
-        ///
-        /// The `.conversion` case is preserved as-is.
         @inlinable
         public func mapBody<NewBody: Swift.Error>(
             _ transform: (Body) -> NewBody
@@ -93,57 +57,23 @@
         }
     }
 
-    // MARK: - Scope Accessor
-
     extension Path {
-        /// Nested accessor for scoped string-to-path conversions.
-        ///
-        /// Operations use nested accessors for path and array handling:
-        ///
-        /// ```swift
-        /// // Single path
-        /// try Path.scope("/tmp/file.txt") { path in
-        ///     try someOperation(path: path)
-        /// }
-        ///
-        /// // Two paths
-        /// try Path.scope("/src", "/dst") { src, dst in
-        ///     try someOperation(from: src, to: dst)
-        /// }
-        ///
-        /// // String arrays (for argv/envp)
-        /// try Path.scope.array(["/bin/sh", "-c", "echo hello"]) { argv in
-        ///     // argv is UnsafePointer<UnsafePointer<Path.Char>?> (NULL-terminated)
-        /// }
-        /// ```
+
         @inlinable
         public static var scope: String.Scope { String.Scope() }
     }
 
-    // MARK: - Scope Type
-
     extension Path.String {
-        /// Namespace for scoped string-to-path operations.
+
         public struct Scope {
-            /// Creates a scope for scoped string-to-path conversions.
+
             @inlinable
             public init() {}
         }
     }
 
-    // MARK: - Single Path
-
     extension Path.String.Scope {
-        /// Executes a closure with a scoped path view converted from a String.
-        ///
-        /// The view is valid only for the duration of the closure and cannot escape.
-        ///
-        /// - Parameters:
-        ///   - string: The path string (UTF-8 on POSIX, UTF-16 on Windows).
-        ///   - body: A closure that receives the scoped path view.
-        /// - Returns: The value returned by the closure.
-        /// - Throws: `String.Error.conversion` if the string contains NUL bytes,
-        ///   or `String.Error.body` wrapping the error from the closure.
+
         @_disfavoredOverload
         @inlinable
         public func callAsFunction<S: StringProtocol, E: Swift.Error, R: ~Copyable>(
@@ -166,10 +96,6 @@
             }
         }
 
-        /// Pass-through overload: when body already throws our wrapper type, rethrow directly.
-        ///
-        /// This prevents nested wrappers like `Error<Error<E>>` when scopes are composed.
-        /// Overload resolution selects this when the body's throw type is `Path.String.Error<E>`.
         @inlinable
         public func callAsFunction<S: StringProtocol, NestedBody: Swift.Error, R: ~Copyable>(
             _ string: S,
@@ -186,7 +112,6 @@
             return try body(path.view)
         }
 
-        /// Executes a closure with a scoped path view (non-throwing body).
         @inlinable
         public func callAsFunction<S: StringProtocol, R: ~Copyable>(
             _ string: S,
@@ -199,10 +124,8 @@
         }
     }
 
-    // MARK: - Two Paths
-
     extension Path.String.Scope {
-        /// Executes a closure with two scoped path views converted from Strings.
+
         @_disfavoredOverload
         @inlinable
         public func callAsFunction<
@@ -240,7 +163,6 @@
             }
         }
 
-        /// Executes a closure with two scoped path views (non-throwing body).
         @inlinable
         public func callAsFunction<S1: StringProtocol, S2: StringProtocol, R: ~Copyable>(
             _ string1: S1,
@@ -257,10 +179,8 @@
         }
     }
 
-    // MARK: - Three Paths
-
     extension Path.String.Scope {
-        /// Executes a closure with three scoped path views converted from Strings.
+
         @_disfavoredOverload
         @inlinable
         public func callAsFunction<
@@ -310,7 +230,6 @@
             }
         }
 
-        /// Executes a closure with three scoped path views (non-throwing body).
         @inlinable
         public func callAsFunction<
             S1: StringProtocol,
@@ -336,46 +255,23 @@
         }
     }
 
-    // MARK: - Array Accessor
-
     extension Path.String.Scope {
-        /// Nested accessor for string array operations.
-        ///
-        /// Converts string arrays to NULL-terminated platform string arrays:
-        /// - **POSIX:** UTF-8 (`CChar*`), suitable for exec* and posix_spawn
-        /// - **Windows:** UTF-16 (`UInt16*`), suitable for Windows APIs
-        ///
-        /// The closure receives `UnsafePointer<UnsafePointer<Path.Char>?>`.
+
         @inlinable
         public var array: Array { Array() }
     }
 
-    // MARK: - Array Type
-
     extension Path.String.Scope {
-        /// Namespace for scoped string array operations.
+
         public struct Array {
-            /// Creates a scope for scoped string-array conversions.
+
             @inlinable
             public init() {}
         }
     }
 
-    // MARK: - Single Array
-
     extension Path.String.Scope.Array {
-        /// Executes a closure with a scoped NULL-terminated platform string array.
-        ///
-        /// Converts an array of Swift strings to a NULL-terminated array of platform strings:
-        /// - **POSIX:** UTF-8 (`CChar*`), suitable for exec* and posix_spawn
-        /// - **Windows:** UTF-16 (`UInt16*`), suitable for Windows APIs
-        ///
-        /// - Parameters:
-        ///   - strings: The strings to convert.
-        ///   - body: A closure that receives the NULL-terminated array pointer.
-        /// - Returns: The value returned by the closure.
-        /// - Throws: `String.Error.conversion` if any string contains NUL bytes,
-        ///   or `String.Error.body` wrapping the error from the closure.
+
         @_disfavoredOverload
         @inlinable
         @unsafe
@@ -415,10 +311,6 @@
             }
         }
 
-        /// Pass-through overload: when body already throws our wrapper type, rethrow directly.
-        ///
-        /// This prevents nested wrappers like `Error<Error<E>>` when scopes are composed.
-        /// Overload resolution selects this when the body's throw type is `Path.String.Error<E>`.
         @inlinable
         @unsafe
         public func callAsFunction<S: StringProtocol, E: Swift.Error, R: ~Copyable>(
@@ -453,7 +345,6 @@
             return try unsafe body(UnsafePointer(pointerArray))
         }
 
-        /// Executes a closure with a scoped NULL-terminated platform string array (non-throwing body).
         @inlinable
         @unsafe
         public func callAsFunction<S: StringProtocol, R: ~Copyable>(
@@ -484,12 +375,8 @@
         }
     }
 
-    // MARK: - Two Arrays
-
     extension Path.String.Scope.Array {
-        /// Executes a closure with two scoped NULL-terminated platform string arrays.
-        ///
-        /// Useful for posix_spawn which needs both argv and envp.
+
         @_disfavoredOverload
         @inlinable
         @unsafe
@@ -566,10 +453,6 @@
             }
         }
 
-        /// Pass-through overload: when body already throws our wrapper type, rethrow directly.
-        ///
-        /// This prevents nested wrappers like `Error<Error<E>>` when scopes are composed.
-        /// Overload resolution selects this when the body's throw type is `Path.String.Error<E>`.
         @inlinable
         @unsafe
         public func callAsFunction<
@@ -642,7 +525,6 @@
             return try unsafe body(UnsafePointer(pointerArray1), UnsafePointer(pointerArray2))
         }
 
-        /// Executes a closure with two scoped NULL-terminated platform string arrays (non-throwing body).
         @inlinable
         @unsafe
         public func callAsFunction<S1: StringProtocol, S2: StringProtocol, R: ~Copyable>(
@@ -699,22 +581,6 @@
         }
     }
 
-    // MARK: - Buffer Allocation Helper
-
-    /// Allocates a null-terminated platform string buffer from a Swift string.
-    ///
-    /// - Parameters:
-    ///   - string: The source string.
-    ///   - index: Index for error reporting in multi-path operations.
-    ///   - count: Output parameter receiving the length in code units (excluding terminator).
-    /// - Returns: A newly allocated buffer containing the null-terminated string.
-    /// - Throws: `interiorNUL` if the string contains an embedded NUL character.
-    ///
-    /// ## Platform Encoding
-    ///
-    /// Encodes through `Path.Codec` (`String_Primitives.String.Codec`), the encoding
-    /// paired with `Path.Char` at its owner — `Unicode.UTF8` on POSIX, `Unicode.UTF16`
-    /// on Windows — so this allocator carries no platform conditional of its own.
     @usableFromInline
     @unsafe
     internal func _allocateBuffer<S: StringProtocol>(
